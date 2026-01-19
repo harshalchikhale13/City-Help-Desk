@@ -1,0 +1,268 @@
+/**
+ * Complaint Detail Page Styles
+ */
+
+.complaint-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.detail-header h1 {
+  font-size: 28px;
+  color: var(--primary);
+  margin: 0 0 10px 0;
+}
+
+.detail-header p {
+  color: var(--secondary);
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Grid Layout */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 20px;
+}
+
+.detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Status Section */
+.status-section .status-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.status-section .status-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.status-section h3 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Detail Section */
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-row {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.detail-row .label {
+  font-weight: 600;
+  color: var(--primary);
+  min-width: 140px;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.detail-row .value {
+  flex: 1;
+  color: var(--dark);
+  line-height: 1.5;
+}
+
+.detail-row .value.long {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Map Placeholder */
+.map-placeholder {
+  height: 300px;
+  background: linear-gradient(135deg, #e7f3ff 0%, #f0f7ff 100%);
+  border: 2px dashed var(--primary);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #666;
+  margin-top: 15px;
+}
+
+/* Progress Card */
+.progress-card {
+  background: linear-gradient(135deg, #f0f7ff 0%, #e7f3ff 100%);
+}
+
+.progress-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.5;
+}
+
+.progress-step.completed {
+  opacity: 1;
+}
+
+.step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--light);
+  border: 2px solid #ddd;
+}
+
+.progress-step.completed .step-dot {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.step-label {
+  font-size: 13px;
+  color: var(--dark);
+  font-weight: 500;
+}
+
+/* Quick Info */
+.quick-info {
+  background: var(--light);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.info-value {
+  color: var(--dark);
+  text-align: right;
+  font-weight: 500;
+}
+
+/* Estimate Card */
+.estimate-card {
+  background: linear-gradient(135deg, #fffbf0 0%, #fff3e0 100%);
+  border-left: 4px solid #ffc107;
+}
+
+.estimate-content {
+  text-align: center;
+  padding: 15px 0;
+}
+
+.estimate-time {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--warning);
+  margin: 0;
+}
+
+.estimate-note {
+  font-size: 12px;
+  color: var(--secondary);
+  margin: 8px 0 0 0;
+}
+
+/* Actions Card */
+.actions-card .ui-button {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-sidebar {
+    grid-column: 1;
+    grid-row: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .complaint-detail-container {
+    padding: 15px;
+  }
+
+  .detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .detail-header h1 {
+    font-size: 22px;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .status-section .status-header {
+    grid-template-columns: 1fr;
+  }
+
+  .map-placeholder {
+    height: 200px;
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,94 @@
+/* Create Complaint Styles */
+.create-complaint-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.create-complaint-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.create-complaint-card h1 {
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+}
+
+.complaint-form {
+  width: 100%;
+}
+
+.coordinates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.coordinates input {
+  width: 100%;
+}
+
+.coordinates button {
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
+.file-upload {
+  border: 2px dashed var(--border-color);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  transition: border-color 0.2s ease;
+}
+
+.file-upload:hover {
+  border-color: var(--primary-color);
+}
+
+.file-upload button {
+  width: auto;
+  margin-top: 0;
+}
+
+.image-preview {
+  position: relative;
+  margin-top: 1rem;
+  width: 200px;
+  height: 200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.btn-large {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .create-complaint-card {
+    padding: 1.5rem;
+  }
+
+  .coordinates {
+    grid-template-columns: 1fr;
+  }
+
+  .coordinates button {
+    grid-column: 1;
+  }
+
+  .file-upload {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Roads & Transport",
+    "description": "Handles road-related issues",
+    "email": "roads@civic.gov",
+    "phone": "011-1234-5678",
+    "is_active": true,
+    "created_at": "2026-01-01T00:00:00.000Z",
+    "updated_at": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Water Supply",
+    "description": "Manages water-related complaints",
+    "email": "water@civic.gov",
+    "phone": "011-1234-5679",
+    "is_active": true,
+    "created_at": "2026-01-01T00:00:00.000Z",
+    "updated_at": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "Sanitation",
+    "description": "Handles waste and cleanliness",
+    "email": "sanitation@civic.gov",
+    "phone": "011-1234-5680",
+    "is_active": true,
+    "created_at": "2026-01-01T00:00:00.000Z",
+    "updated_at": "2026-01-01T00:00:00.000Z"
+  }
+]

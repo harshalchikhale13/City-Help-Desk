@@ -1,0 +1,135 @@
+/**
+ * Bulk Assignment Modal Styles
+ */
+
+.bulk-assignment-modal {
+  padding: 30px;
+  background: var(--bg-surface, #ffffff);
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.bulk-assignment-modal h2 {
+  margin: 0 0 20px 0;
+  color: var(--text-primary, #333);
+  font-size: 24px;
+}
+
+.info-text {
+  color: var(--text-secondary, #666);
+  margin-bottom: 20px;
+  padding: 12px;
+  background: var(--bg-light, #f8f9fa);
+  border-left: 4px solid var(--primary-color, #007bff);
+  border-radius: 4px;
+}
+
+.officer-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.officer-selection label {
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.officer-select {
+  padding: 12px;
+  border: 2px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--bg-surface, #ffffff);
+  color: var(--text-primary, #333);
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.officer-select:hover:not(:disabled) {
+  border-color: var(--primary-color, #007bff);
+}
+
+.officer-select:focus {
+  outline: none;
+  border-color: var(--primary-color, #007bff);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.officer-select:disabled {
+  background: var(--bg-light, #f8f9fa);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.officer-info {
+  padding: 15px;
+  background: var(--success-bg, rgba(40, 167, 69, 0.1));
+  border-left: 4px solid var(--success-color, #28a745);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  animation: slideIn 0.3s ease;
+}
+
+.officer-info h4 {
+  margin: 0 0 10px 0;
+  color: var(--text-primary, #333);
+}
+
+.officer-info p {
+  margin: 5px 0;
+  color: var(--text-secondary, #666);
+  font-size: 14px;
+}
+
+.officer-info strong {
+  color: var(--text-primary, #333);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .bulk-assignment-modal {
+    background: var(--bg-surface-dark, #1e1e1e);
+  }
+
+  .officer-select {
+    background: var(--bg-surface-dark, #1e1e1e);
+    color: var(--text-primary-dark, #e0e0e0);
+    border-color: var(--border-color-dark, #333);
+  }
+
+  .info-text {
+    background: var(--bg-light-dark, #2a2a2a);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .bulk-assignment-modal {
+    padding: 20px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+}

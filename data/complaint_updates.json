@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "complaint_id": 1,
+    "updated_by": 2,
+    "status_change": "submitted to assigned",
+    "comment": "Complaint assigned to Roads Department",
+    "created_at": "2026-01-17T09:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "complaint_id": 1,
+    "updated_by": 2,
+    "status_change": "assigned to in_progress",
+    "comment": "Work started on pothole repair",
+    "created_at": "2026-01-17T10:30:00.000Z"
+  },
+  {
+    "id": 3,
+    "complaint_id": 3,
+    "updated_by": 2,
+    "status_change": "submitted to assigned",
+    "comment": "Assigned to Water Supply Department",
+    "created_at": "2026-01-16T12:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "complaint_id": 3,
+    "updated_by": 2,
+    "status_change": "assigned to in_progress",
+    "comment": "Inspection team investigating the issue",
+    "created_at": "2026-01-17T08:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "complaint_id": 3,
+    "updated_by": 2,
+    "status_change": "in_progress to resolved",
+    "comment": "Main pipeline repaired and water supply restored",
+    "created_at": "2026-01-18T14:00:00.000Z"
+  }
+]

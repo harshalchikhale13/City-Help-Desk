@@ -1,0 +1,88 @@
+/* Auth Pages Styles */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+}
+
+.auth-card-large {
+  max-width: 600px;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+
+.auth-header h2 {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.auth-form {
+  margin-bottom: 1.5rem;
+}
+
+.auth-footer {
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.auth-footer p {
+  margin-bottom: 0;
+}
+
+.demo-credentials {
+  background-color: var(--light-bg);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.demo-credentials p {
+  margin-bottom: 0.5rem;
+}
+
+.demo-credentials strong {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.5rem;
+  }
+
+  .auth-card-large {
+    max-width: 100%;
+  }
+
+  .auth-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .auth-header h2 {
+    font-size: 1.25rem;
+  }
+}
