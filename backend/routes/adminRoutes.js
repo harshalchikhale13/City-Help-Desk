@@ -19,6 +19,12 @@ router.get('/stats/system', AdminController.getSystemStats);
 // Officer statistics and performance
 router.get('/stats/officers', AdminController.getOfficerStats);
 
+// Create new officer
+router.post('/officers', AdminController.createOfficer);
+
+// Assign complaint to officer
+router.post('/complaints/:complaintId/assign', AdminController.assignComplaint);
+
 // Department metrics
 router.get('/stats/departments', AdminController.getDepartmentMetrics);
 

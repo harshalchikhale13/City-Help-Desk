@@ -1,88 +1,369 @@
-/* Auth Pages Styles */
-.auth-container {
+/* Modern Auth Styles - Split Layout */
+.login-page-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  padding: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 100vw;
+  background: transparent;
+  /* Use body bg image */
+  overflow: hidden;
+  position: relative;
 }
 
-.auth-card {
-  background-color: white;
-  border-radius: 0.75rem;
-  padding: 2rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 100%;
+/* Ensure navbar doesn't break layout if present */
+/* We might want to hide navbar on login page, but assuming full screen takeover */
+
+/* Left Hero Section */
+.login-hero-section {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px;
 }
 
-.auth-card-large {
-  max-width: 600px;
+/* Semi-transparent overlay for readability on left side */
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(30, 41, 59, 0.6) 100%);
+  z-index: 0;
 }
 
-.auth-header {
-  text-align: center;
-  margin-bottom: 2rem;
+.hero-content {
+  position: relative;
+  z-index: 2;
+  color: white;
+  max-width: 650px;
 }
 
-.auth-header h1 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: var(--primary-color);
+.hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  background: linear-gradient(to right, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Fallback */
+  color: white;
 }
 
-.auth-header h2 {
-  font-size: 1.5rem;
-  color: var(--text-secondary);
+.highlight-text {
+  color: #60a5fa;
+  -webkit-text-fill-color: #60a5fa;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: #cbd5e1;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+/* Stats Card / Graph */
+.hero-stats-card {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.chart-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
   margin: 0;
 }
 
-.auth-form {
-  margin-bottom: 1.5rem;
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #4ade80;
+  font-weight: 600;
+  background: rgba(34, 197, 94, 0.15);
+  padding: 4px 8px;
+  border-radius: 12px;
 }
 
-.auth-footer {
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #4ade80;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* Mock Graph CSS */
+.mock-graph {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 150px;
+  /* Taller graph */
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+}
+
+.graph-bar-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  width: 8%;
+  /* Thinner bars */
+  gap: 4px;
+  position: relative;
+}
+
+.bar-fill {
+  width: 100%;
+  border-radius: 4px;
+  transition: height 1s ease-out;
+}
+
+.bar-fill.solved {
+  background: linear-gradient(to top, #3b82f6, #60a5fa);
+  opacity: 1;
+}
+
+.bar-fill.pending {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.bar-label {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Right Form Section */
+.login-form-section {
+  width: 500px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+}
+
+.login-card {
+  width: 100%;
+}
+
+.login-header {
+  margin-bottom: 30px;
+}
+
+.logo-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.login-header h2 {
+  font-size: 2.2rem;
+  color: white;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.login-header p {
+  color: #94a3b8;
+  font-size: 1rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group-modern {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group-modern label {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.form-group-modern input {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group-modern input:focus {
+  outline: none;
+  background: rgba(15, 23, 42, 0.8);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+.btn-modern-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-modern-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+}
+
+.login-footer {
+  margin-top: 24px;
   text-align: center;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
+  color: #94a3b8;
+  font-size: 0.9rem;
 }
 
-.auth-footer p {
-  margin-bottom: 0;
+.link-modern {
+  color: #60a5fa;
+  font-weight: 600;
+  margin-left: 5px;
 }
 
-.demo-credentials {
-  background-color: var(--light-bg);
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-top: 1.5rem;
-  font-size: 0.875rem;
+.link-modern:hover {
+  text-decoration: underline;
+  color: #93c5fd;
 }
 
-.demo-credentials p {
-  margin-bottom: 0.5rem;
+.demo-pills {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.demo-credentials strong {
+.demo-pills small {
+  color: #64748b;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-@media (max-width: 480px) {
-  .auth-card {
-    padding: 1.5rem;
+.pill-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pill-group span {
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.pill-group span:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: white;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
   }
 
-  .auth-card-large {
-    max-width: 100%;
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
   }
 
-  .auth-header h1 {
-    font-size: 1.5rem;
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 968px) {
+  .login-page-container {
+    flex-direction: column;
+    overflow-y: auto;
   }
 
-  .auth-header h2 {
-    font-size: 1.25rem;
+  .login-hero-section {
+    padding: 40px 20px;
+    min-height: 400px;
+  }
+
+  .login-form-section {
+    width: 100%;
+    padding: 40px 20px;
+    background: rgba(15, 23, 42, 0.95);
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
   }
 }

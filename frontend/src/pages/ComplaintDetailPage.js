@@ -16,16 +16,29 @@ import {
 } from '../components/UIComponents';
 import { useAuth } from '../context/AuthContext';
 import './ComplaintDetail.css';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+
+// Fix Leaflet marker icon issue
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 export default function ComplaintDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   const [complaint, setComplaint] = useState(null);
   const [updates, setUpdates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [officers, setOfficers] = useState([]);
+  const [showAssignUI, setShowAssignUI] = useState(false);
+  const [selectedOfficer, setSelectedOfficer] = useState('');
 
   /**
    * Fetch complaint details
@@ -57,6 +70,52 @@ export default function ComplaintDetailPage() {
 
     fetchComplaint();
   }, [id, token]);
+
+  useEffect(() => {
+    if (user && (user.role === 'admin' || user.role === 'department_officer') && token) {
+      fetchOfficers();
+    }
+  }, [user, token]);
+
+  const fetchOfficers = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/admin/stats/officers', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setOfficers(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch officers', err);
+    }
+  };
+
+  const handleAssignOfficer = async () => {
+    if (!selectedOfficer) return;
+    try {
+      const response = await fetch(`http://localhost:5000/api/admin/complaints/${id}/assign`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ officerId: selectedOfficer })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setComplaint(data.complaint);
+        setShowAssignUI(false);
+        alert('Officer assigned successfully');
+      } else {
+        alert('Failed to assign officer');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error assigning officer');
+    }
+  };
 
   /**
    * Get category icon
@@ -180,7 +239,25 @@ export default function ComplaintDetailPage() {
                   {complaint.latitude}, {complaint.longitude}
                 </span>
               </div>
-              <div className="map-placeholder">📍 Map view would be displayed here</div>
+              <div className="map-container">
+                <MapContainer
+                  center={[Number(complaint.latitude), Number(complaint.longitude)]}
+                  zoom={15}
+                  style={{ height: '100%', width: '100%' }}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  <Marker position={[Number(complaint.latitude), Number(complaint.longitude)]}>
+                    <Popup>
+                      <strong>{complaint.category} Complaint</strong>
+                      <br />
+                      {complaint.location_address}
+                    </Popup>
+                  </Marker>
+                </MapContainer>
+              </div>
             </div>
           </Card>
         </div>
@@ -243,6 +320,38 @@ export default function ComplaintDetailPage() {
             <Button variant="ghost" style={{ width: '100%' }}>
               ⭐ Rate Service
             </Button>
+
+            {user && (user.role === 'admin' || user.role === 'department_officer') && (
+              <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#555' }}>👮 Admin Actions</h4>
+                {!showAssignUI ? (
+                  <Button variant="primary" style={{ width: '100%', background: '#2c3e50' }} onClick={() => setShowAssignUI(true)}>
+                    Assign Officer
+                  </Button>
+                ) : (
+                  <div className="assign-box">
+                    <select
+                      style={{ width: '100%', padding: '8px', marginBottom: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                      value={selectedOfficer}
+                      onChange={(e) => setSelectedOfficer(e.target.value)}
+                    >
+                      <option value="">Select Officer</option>
+                      {officers.map(off => (
+                        <option key={off.id} value={off.id}>{off.name} ({off.department})</option>
+                      ))}
+                    </select>
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      <Button variant="primary" onClick={handleAssignOfficer} disabled={!selectedOfficer} style={{ flex: 1, fontSize: '12px' }}>
+                        Confirm
+                      </Button>
+                      <Button variant="secondary" onClick={() => setShowAssignUI(false)} style={{ flex: 1, fontSize: '12px' }}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </Card>
         </div>
       </div>

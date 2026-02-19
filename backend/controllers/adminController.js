@@ -72,6 +72,100 @@ class AdminController {
   }
 
   /**
+   * Create a new officer account
+   */
+  static async createOfficer(req, res) {
+    try {
+      const { firstName, lastName, email, password, department, phone } = req.body;
+
+      // Use userService to register (reuse logic)
+      // We import userService inside the method or require it at top
+      const userService = require('../services/userService');
+
+      const result = await userService.registerUser({
+        firstName,
+        lastName,
+        email,
+        password,
+        phone,
+        username: email.split('@')[0], // Generate username from email
+        role: 'officer'
+      });
+
+      // Update with department if needed (custom field not in standard user model)
+      if (department) {
+        const users = storage.read('users.json');
+        const userIndex = users.findIndex(u => u.id === result.user.id);
+        if (userIndex !== -1) {
+          users[userIndex].department = department;
+          storage.write('users.json', users);
+          result.user.department = department;
+        }
+      }
+
+      res.status(201).json({
+        success: true,
+        message: 'Officer created successfully',
+        officer: result.user
+      });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  /**
+   * Assign a single complaint to an officer
+   */
+  static async assignComplaint(req, res) {
+    try {
+      const { complaintId } = req.params;
+      const { officerId } = req.body;
+
+      if (!officerId) {
+        return res.status(400).json({ error: 'Officer ID is required' });
+      }
+
+      const complaints = storage.read('complaints.json') || [];
+      const complaintIndex = complaints.findIndex(c => c.id === complaintId);
+
+      if (complaintIndex === -1) {
+        return res.status(404).json({ error: 'Complaint not found' });
+      }
+
+      // Check if officer exists
+      const users = storage.read('users.json') || [];
+      const officer = users.find(u => u.id === officerId && (u.role === 'officer' || u.role === 'admin'));
+
+      if (!officer) {
+        return res.status(400).json({ error: 'Invalid officer selected' });
+      }
+
+      // Update complaint
+      complaints[complaintIndex].assigned_officer_id = officerId;
+      complaints[complaintIndex].assigned_at = new Date().toISOString();
+      complaints[complaintIndex].status = 'in_progress'; // Auto move to in-progress
+
+      // Add timeline entry
+      if (!complaints[complaintIndex].timeline) complaints[complaintIndex].timeline = [];
+      complaints[complaintIndex].timeline.push({
+        status: 'assigned',
+        timestamp: new Date().toISOString(),
+        note: `Assigned to officer ${officer.first_name || ''} ${officer.last_name || ''}`
+      });
+
+      storage.write('complaints.json', complaints);
+
+      res.json({
+        success: true,
+        message: 'Complaint assigned successfully',
+        complaint: complaints[complaintIndex]
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  /**
    * Get officer statistics and performance metrics
    */
   static async getOfficerStats(req, res) {
@@ -211,7 +305,7 @@ class AdminController {
           analytics.byCategory[complaint.category] = { total: 0, statuses: {} };
         }
         analytics.byCategory[complaint.category].total++;
-        analytics.byCategory[complaint.category].statuses[complaint.status] = 
+        analytics.byCategory[complaint.category].statuses[complaint.status] =
           (analytics.byCategory[complaint.category].statuses[complaint.status] || 0) + 1;
 
         // By status
@@ -332,17 +426,17 @@ class AdminController {
           total: deptComplaints.length,
           resolved: resolved.length,
           pending: pending.length,
-          resolutionRate: deptComplaints.length > 0 
+          resolutionRate: deptComplaints.length > 0
             ? Math.round((resolved.length / deptComplaints.length) * 100)
             : 0,
           avgResolutionDays: resolved.length > 0
             ? Math.round(
-                resolved.reduce((sum, c) => {
-                  const created = new Date(c.createdAt);
-                  const res = new Date(c.resolvedAt || Date.now());
-                  return sum + (res - created);
-                }, 0) / resolved.length / (1000 * 60 * 60 * 24)
-              )
+              resolved.reduce((sum, c) => {
+                const created = new Date(c.createdAt);
+                const res = new Date(c.resolvedAt || Date.now());
+                return sum + (res - created);
+              }, 0) / resolved.length / (1000 * 60 * 60 * 24)
+            )
             : 0
         };
       });

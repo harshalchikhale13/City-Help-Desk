@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Civic Complaints Dashboard</title>
+    <title>City-Help Desk</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
@@ -16,8 +17,8 @@
             --light: #f8f9fa;
             --dark: #2d3748;
             --white: #ffffff;
-            --shadow: 0 2px 8px rgba(0,0,0,0.1);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
 
         [data-theme="dark"] {
@@ -35,7 +36,8 @@
             box-sizing: border-box;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
@@ -212,7 +214,9 @@
             color: var(--dark);
         }
 
-        input, textarea, select {
+        input,
+        textarea,
+        select {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
@@ -222,7 +226,9 @@
             transition: all 0.3s;
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
@@ -244,8 +250,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .form-steps {
@@ -362,10 +375,25 @@
             text-transform: uppercase;
         }
 
-        .status-submitted { background: #e7f3ff; color: #0066cc; }
-        .status-in_progress { background: #fff3cd; color: #856404; }
-        .status-resolved { background: #d4edda; color: #155724; }
-        .status-closed { background: #f8d7da; color: #721c24; }
+        .status-submitted {
+            background: #e7f3ff;
+            color: #0066cc;
+        }
+
+        .status-in_progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-resolved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-closed {
+            background: #f8d7da;
+            color: #721c24;
+        }
 
         .priority-badge {
             padding: 4px 8px;
@@ -374,9 +402,20 @@
             font-weight: bold;
         }
 
-        .priority-high { background: #dc3545; color: white; }
-        .priority-medium { background: #ffc107; color: #333; }
-        .priority-low { background: #28a745; color: white; }
+        .priority-high {
+            background: #dc3545;
+            color: white;
+        }
+
+        .priority-medium {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .priority-low {
+            background: #28a745;
+            color: white;
+        }
 
         .complaint-body {
             margin: 10px 0;
@@ -463,16 +502,28 @@
                 transform: translateX(400px);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
             }
         }
 
-        .notification.success { border-left: 4px solid var(--success); }
-        .notification.error { border-left: 4px solid var(--danger); }
-        .notification.warning { border-left: 4px solid var(--warning); }
-        .notification.info { border-left: 4px solid var(--info); }
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--info);
+        }
 
         .notification-icon {
             font-size: 20px;
@@ -523,7 +574,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 999;
             animation: fadeIn 0.3s;
         }
@@ -624,11 +675,17 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Navigation -->
@@ -656,7 +713,8 @@
                     <label>Password</label>
                     <input id="loginPassword" type="password" value="Password123!" placeholder="Enter your password">
                 </div>
-                <button class="btn btn-primary" onclick="login()" style="width: 100%; justify-content: center;">Login</button>
+                <button class="btn btn-primary" onclick="login()"
+                    style="width: 100%; justify-content: center;">Login</button>
             </div>
         </div>
 
@@ -703,7 +761,8 @@
                         <h3>High Priority</h3>
                         <div class="stat-value" id="highPriorityCount">0</div>
                         <div class="progress-bar">
-                            <div class="progress-fill" id="highPriorityProgress" style="width: 0%; background: linear-gradient(90deg, #dc3545, #ff6b6b);"></div>
+                            <div class="progress-fill" id="highPriorityProgress"
+                                style="width: 0%; background: linear-gradient(90deg, #dc3545, #ff6b6b);"></div>
                         </div>
                     </div>
                 </div>
@@ -754,7 +813,8 @@
                             </div>
                             <div class="form-group">
                                 <label>Description *</label>
-                                <textarea id="description" placeholder="Describe the issue in detail..." required></textarea>
+                                <textarea id="description" placeholder="Describe the issue in detail..."
+                                    required></textarea>
                                 <small id="charCount">0/500 characters</small>
                             </div>
                             <div class="form-group">
@@ -764,7 +824,8 @@
                                     <option value="medium">🟡 Medium</option>
                                     <option value="high">🔴 High</option>
                                 </select>
-                                <div id="priorityWarning" style="display: none; margin-top: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+                                <div id="priorityWarning"
+                                    style="display: none; margin-top: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
                                     ⚠️ High priority complaints will be reviewed urgently
                                 </div>
                             </div>
@@ -780,22 +841,26 @@
                             </div>
                             <div class="form-group">
                                 <label>Auto-detect Location</label>
-                                <button type="button" class="btn btn-secondary" onclick="detectLocation()">📍 Use Current Location</button>
+                                <button type="button" class="btn btn-secondary" onclick="detectLocation()">📍 Use
+                                    Current Location</button>
                                 <small id="locationStatus"></small>
                             </div>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                                 <div class="form-group">
                                     <label>Latitude</label>
-                                    <input id="latitude" type="number" placeholder="Auto-filled" step="0.00001" value="28.7041">
+                                    <input id="latitude" type="number" placeholder="Auto-filled" step="0.00001"
+                                        value="28.7041">
                                 </div>
                                 <div class="form-group">
                                     <label>Longitude</label>
-                                    <input id="longitude" type="number" placeholder="Auto-filled" step="0.00001" value="77.1025">
+                                    <input id="longitude" type="number" placeholder="Auto-filled" step="0.00001"
+                                        value="77.1025">
                                 </div>
                             </div>
                             <div style="display: flex; gap: 10px;">
                                 <button type="button" class="btn btn-secondary" onclick="prevStep()">← Back</button>
-                                <button type="button" class="btn btn-primary" onclick="nextStep()" style="flex: 1;">Next →</button>
+                                <button type="button" class="btn btn-primary" onclick="nextStep()" style="flex: 1;">Next
+                                    →</button>
                             </div>
                         </div>
 
@@ -815,7 +880,8 @@
                             </div>
                             <div style="display: flex; gap: 10px;">
                                 <button type="button" class="btn btn-secondary" onclick="prevStep()">← Back</button>
-                                <button type="submit" class="btn btn-primary" style="flex: 1;">🚀 Submit Complaint</button>
+                                <button type="submit" class="btn btn-primary" style="flex: 1;">🚀 Submit
+                                    Complaint</button>
                             </div>
                         </div>
                     </form>
@@ -827,7 +893,8 @@
                 <div class="card">
                     <h3>Search & Filter</h3>
                     <div class="search-bar">
-                        <input id="searchInput" type="text" placeholder="Search by ID or keyword..." onkeyup="filterComplaints()">
+                        <input id="searchInput" type="text" placeholder="Search by ID or keyword..."
+                            onkeyup="filterComplaints()">
                         <select id="statusFilter" onchange="filterComplaints()">
                             <option value="">All Status</option>
                             <option value="submitted">Submitted</option>
@@ -961,7 +1028,7 @@
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            
+
             event.target.classList.add('active');
             document.getElementById(tabName).classList.add('active');
 
@@ -990,9 +1057,9 @@
 
                 document.getElementById('step' + currentFormStep).classList.remove('active');
                 document.querySelector(`[data-step="${currentFormStep}"]`).classList.remove('active');
-                
+
                 currentFormStep++;
-                
+
                 document.getElementById('step' + currentFormStep).classList.add('active');
                 document.querySelector(`[data-step="${currentFormStep}"]`).classList.add('active');
             }
@@ -1002,9 +1069,9 @@
             if (currentFormStep > 1) {
                 document.getElementById('step' + currentFormStep).classList.remove('active');
                 document.querySelector(`[data-step="${currentFormStep}"]`).classList.remove('active');
-                
+
                 currentFormStep--;
-                
+
                 document.getElementById('step' + currentFormStep).classList.add('active');
                 document.querySelector(`[data-step="${currentFormStep}"]`).classList.add('active');
             }
@@ -1044,7 +1111,7 @@
         function previewImage() {
             const input = document.getElementById('imageInput');
             const preview = document.getElementById('imagePreview');
-            
+
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -1110,7 +1177,7 @@
         // Display Complaints
         function displayComplaints(complaints) {
             const container = document.getElementById('complaintsList');
-            
+
             if (complaints.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -1313,7 +1380,7 @@
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            
+
             const icons = {
                 success: '✅',
                 error: '❌',
@@ -1355,4 +1422,5 @@
         });
     </script>
 </body>
+
 </html>

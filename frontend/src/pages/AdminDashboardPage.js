@@ -30,6 +30,15 @@ const AdminDashboardPage = () => {
     status: '',
     priority: '',
   });
+  const [showAddOfficer, setShowAddOfficer] = useState(false);
+  const [newOfficer, setNewOfficer] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    department: '',
+    phone: ''
+  });
 
   useEffect(() => {
     if (user && (user.role === 'admin' || user.role === 'department_officer')) {
@@ -67,7 +76,7 @@ const AdminDashboardPage = () => {
 
   const handleAddComplaint = async (e) => {
     e.preventDefault();
-    
+
     try {
       if (!newComplaint.description || !newComplaint.locationAddress) {
         alert('Please fill in all required fields');
@@ -98,7 +107,7 @@ const AdminDashboardPage = () => {
       }
     } catch (err) {
       console.error('Error adding complaint:', err);
-      
+
       // Handle validation errors
       let errorMessage = 'Failed to add complaint';
       if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
@@ -110,7 +119,7 @@ const AdminDashboardPage = () => {
       } else if (err.message) {
         errorMessage = err.message;
       }
-      
+
       alert(errorMessage);
     }
   };
@@ -129,6 +138,22 @@ const AdminDashboardPage = () => {
     } catch (err) {
       console.error('Error updating status:', err);
       alert('Failed to update status: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleAddOfficer = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post('/admin/officers', newOfficer);
+      if (response.data.success) {
+        alert('Officer created successfully!'); // In a real app use toast
+        setShowAddOfficer(false);
+        setNewOfficer({ firstName: '', lastName: '', email: '', password: '', department: '', phone: '' });
+        fetchDashboardData();
+      }
+    } catch (err) {
+      console.error('Error creating officer:', err);
+      alert('Failed to create officer: ' + (err.response?.data?.error || err.message));
     }
   };
 
@@ -185,7 +210,7 @@ const AdminDashboardPage = () => {
           <h1>Admin Control Center</h1>
           <p>System Management & Analytics</p>
         </div>
-        <button 
+        <button
           className="btn-add-complaint"
           onClick={() => setShowAddComplaint(!showAddComplaint)}
         >
@@ -207,7 +232,7 @@ const AdminDashboardPage = () => {
               <label>Category *</label>
               <select
                 value={newComplaint.category}
-                onChange={(e) => setNewComplaint({...newComplaint, category: e.target.value})}
+                onChange={(e) => setNewComplaint({ ...newComplaint, category: e.target.value })}
                 required
               >
                 <option value="pothole">Pothole</option>
@@ -221,15 +246,15 @@ const AdminDashboardPage = () => {
             </div>
 
             <div className="form-group">
-              <label>Description * <span style={{fontSize: '0.85rem', color: '#666'}}>(minimum 5 characters)</span></label>
+              <label>Description * <span style={{ fontSize: '0.85rem', color: '#666' }}>(minimum 5 characters)</span></label>
               <textarea
                 value={newComplaint.description}
-                onChange={(e) => setNewComplaint({...newComplaint, description: e.target.value})}
+                onChange={(e) => setNewComplaint({ ...newComplaint, description: e.target.value })}
                 placeholder="Describe the issue..."
                 rows="3"
                 required
               />
-              <small style={{color: '#666'}}>Characters: {newComplaint.description.length}/1000</small>
+              <small style={{ color: '#666' }}>Characters: {newComplaint.description.length}/1000</small>
             </div>
 
             <div className="form-row">
@@ -237,7 +262,7 @@ const AdminDashboardPage = () => {
                 <label>Priority</label>
                 <select
                   value={newComplaint.priority}
-                  onChange={(e) => setNewComplaint({...newComplaint, priority: e.target.value})}
+                  onChange={(e) => setNewComplaint({ ...newComplaint, priority: e.target.value })}
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -246,11 +271,11 @@ const AdminDashboardPage = () => {
               </div>
 
               <div className="form-group">
-                <label>Location Address * <span style={{fontSize: '0.85rem', color: '#666'}}>(minimum 3 characters)</span></label>
+                <label>Location Address * <span style={{ fontSize: '0.85rem', color: '#666' }}>(minimum 3 characters)</span></label>
                 <input
                   type="text"
                   value={newComplaint.locationAddress}
-                  onChange={(e) => setNewComplaint({...newComplaint, locationAddress: e.target.value})}
+                  onChange={(e) => setNewComplaint({ ...newComplaint, locationAddress: e.target.value })}
                   placeholder="Street, Area, City"
                   required
                 />
@@ -264,7 +289,7 @@ const AdminDashboardPage = () => {
                   type="number"
                   step="0.0001"
                   value={newComplaint.latitude}
-                  onChange={(e) => setNewComplaint({...newComplaint, latitude: e.target.value})}
+                  onChange={(e) => setNewComplaint({ ...newComplaint, latitude: e.target.value })}
                 />
               </div>
 
@@ -274,7 +299,7 @@ const AdminDashboardPage = () => {
                   type="number"
                   step="0.0001"
                   value={newComplaint.longitude}
-                  onChange={(e) => setNewComplaint({...newComplaint, longitude: e.target.value})}
+                  onChange={(e) => setNewComplaint({ ...newComplaint, longitude: e.target.value })}
                 />
               </div>
             </div>
@@ -383,7 +408,7 @@ const AdminDashboardPage = () => {
             <div className="chart-wrapper">
               <h3>Complaint Categories</h3>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart 
+                <BarChart
                   data={Object.entries(systemStats.complaintsByCategory).map(([name, value]) => ({
                     name: name.replace(/_/g, ' '),
                     value
@@ -406,7 +431,7 @@ const AdminDashboardPage = () => {
                   <div className="metric-label">Assignment Rate</div>
                   <div className="metric-value">{systemStats.assignmentRate}%</div>
                   <div className="metric-bar">
-                    <div className="metric-progress" style={{width: systemStats.assignmentRate + '%'}}></div>
+                    <div className="metric-progress" style={{ width: systemStats.assignmentRate + '%' }}></div>
                   </div>
                 </div>
                 <div className="metric-item">
@@ -416,13 +441,13 @@ const AdminDashboardPage = () => {
                 <div className="metric-item">
                   <div className="metric-label">Resolution Rate</div>
                   <div className="metric-value">
-                    {systemStats.totalComplaints > 0 
+                    {systemStats.totalComplaints > 0
                       ? Math.round((systemStats.complaintsByStatus.resolved / systemStats.totalComplaints) * 100)
                       : 0}%
                   </div>
                   <div className="metric-bar">
                     <div className="metric-progress" style={{
-                      width: (systemStats.totalComplaints > 0 
+                      width: (systemStats.totalComplaints > 0
                         ? Math.round((systemStats.complaintsByStatus.resolved / systemStats.totalComplaints) * 100)
                         : 0) + '%'
                     }}></div>
@@ -443,9 +468,9 @@ const AdminDashboardPage = () => {
           <div className="complaints-section">
             <h2>All Complaints</h2>
             <div className="complaints-filters">
-              <select 
+              <select
                 value={filters.status}
-                onChange={(e) => setFilters({...filters, status: e.target.value})}
+                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
                 className="filter-select"
               >
                 <option value="">All Status</option>
@@ -454,9 +479,9 @@ const AdminDashboardPage = () => {
                 <option value="resolved">Resolved</option>
                 <option value="closed">Closed</option>
               </select>
-              <select 
+              <select
                 value={filters.priority}
-                onChange={(e) => setFilters({...filters, priority: e.target.value})}
+                onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
                 className="filter-select"
               >
                 <option value="">All Priority</option>
@@ -485,50 +510,50 @@ const AdminDashboardPage = () => {
                       .filter(c => !filters.status || c.status === filters.status)
                       .filter(c => !filters.priority || c.priority === filters.priority)
                       .map(complaint => (
-                      <tr key={complaint.id}>
-                        <td><strong>{complaint.complaint_id}</strong></td>
-                        <td>{complaint.category}</td>
-                        <td>{complaint.description.substring(0, 50)}...</td>
-                        <td>
-                          <span className={`priority-badge priority-${complaint.priority}`}>
-                            {complaint.priority.toUpperCase()}
-                          </span>
-                        </td>
-                        <td>
-                          <select 
-                            value={complaint.status}
-                            onChange={(e) => handleStatusChange(complaint.id, e.target.value)}
-                            className="status-select"
-                          >
-                            <option value="submitted">Submitted</option>
-                            <option value="in-progress">In Progress</option>
-                            <option value="resolved">Resolved</option>
-                            <option value="closed">Closed</option>
-                          </select>
-                        </td>
-                        <td>{new Date(complaint.created_at).toLocaleDateString()}</td>
-                        <td>
-                          <button 
-                            className="action-btn"
-                            onClick={() => handleViewComplaint(complaint.complaint_id)}
-                          >
-                            View
-                          </button>
-                          <button 
-                            className="action-btn delete-btn"
-                            onClick={() => handleDeleteComplaint(complaint.id)}
-                            title="Delete complaint"
-                          >
-                            🗑️ Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                        <tr key={complaint.id}>
+                          <td><strong>{complaint.complaint_id}</strong></td>
+                          <td>{complaint.category}</td>
+                          <td>{complaint.description.substring(0, 50)}...</td>
+                          <td>
+                            <span className={`priority-badge priority-${complaint.priority}`}>
+                              {complaint.priority.toUpperCase()}
+                            </span>
+                          </td>
+                          <td>
+                            <select
+                              value={complaint.status}
+                              onChange={(e) => handleStatusChange(complaint.id, e.target.value)}
+                              className="status-select"
+                            >
+                              <option value="submitted">Submitted</option>
+                              <option value="in-progress">In Progress</option>
+                              <option value="resolved">Resolved</option>
+                              <option value="closed">Closed</option>
+                            </select>
+                          </td>
+                          <td>{new Date(complaint.created_at).toLocaleDateString()}</td>
+                          <td>
+                            <button
+                              className="action-btn"
+                              onClick={() => handleViewComplaint(complaint.complaint_id)}
+                            >
+                              View
+                            </button>
+                            <button
+                              className="action-btn delete-btn"
+                              onClick={() => handleDeleteComplaint(complaint.id)}
+                              title="Delete complaint"
+                            >
+                              🗑️ Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>
             ) : (
-              <div style={{padding: '20px', textAlign: 'center', color: '#666'}}>
+              <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
                 No complaints found
               </div>
             )}
@@ -538,13 +563,71 @@ const AdminDashboardPage = () => {
 
       {activeTab === 'officers' && (
         <div className="tab-content">
-          <h2>Officer Performance</h2>
+          <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h2>Officer Management</h2>
+            <button
+              className="btn-add-complaint"
+              onClick={() => setShowAddOfficer(!showAddOfficer)}
+            >
+              ➕ {showAddOfficer ? 'Cancel' : 'Add New Officer'}
+            </button>
+          </div>
+
+          {showAddOfficer && (
+            <div className="add-complaint-form" style={{ marginBottom: '30px' }}>
+              <h3>Register New Officer</h3>
+              <form onSubmit={handleAddOfficer}>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>First Name *</label>
+                    <input type="text" value={newOfficer.firstName} onChange={e => setNewOfficer({ ...newOfficer, firstName: e.target.value })} required />
+                  </div>
+                  <div className="form-group">
+                    <label>Last Name *</label>
+                    <input type="text" value={newOfficer.lastName} onChange={e => setNewOfficer({ ...newOfficer, lastName: e.target.value })} required />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Email *</label>
+                    <input type="email" value={newOfficer.email} onChange={e => setNewOfficer({ ...newOfficer, email: e.target.value })} required />
+                  </div>
+                  <div className="form-group">
+                    <label>Password *</label>
+                    <input type="password" value={newOfficer.password} onChange={e => setNewOfficer({ ...newOfficer, password: e.target.value })} required />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Department</label>
+                    <select value={newOfficer.department} onChange={e => setNewOfficer({ ...newOfficer, department: e.target.value })}>
+                      <option value="">Select Department</option>
+                      <option value="Roads">Roads</option>
+                      <option value="Water">Water</option>
+                      <option value="Sanitation">Sanitation</option>
+                      <option value="Electricity">Electricity</option>
+                      <option value="Police">Police</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Phone</label>
+                    <input type="text" value={newOfficer.phone} onChange={e => setNewOfficer({ ...newOfficer, phone: e.target.value })} />
+                  </div>
+                </div>
+                <div className="form-actions">
+                  <button type="submit" className="btn-submit">Register Officer</button>
+                </div>
+              </form>
+            </div>
+          )}
+
           {officerStats.length > 0 ? (
             <div className="officers-table-container">
               <table className="officers-table">
                 <thead>
                   <tr>
                     <th>Officer Name</th>
+                    <th>Department</th>
                     <th>Assigned</th>
                     <th>Resolved</th>
                     <th>Pending</th>
@@ -554,18 +637,29 @@ const AdminDashboardPage = () => {
                 <tbody>
                   {officerStats.map(officer => (
                     <tr key={officer.id}>
-                      <td>{officer.name}</td>
+                      <td>
+                        <strong>{officer.name}</strong>
+                        <div style={{ fontSize: '0.8em', color: '#666' }}>{officer.email}</div>
+                      </td>
+                      <td><span className="badge badge-info">{officer.department}</span></td>
                       <td>{officer.totalAssigned}</td>
                       <td>{officer.resolved}</td>
                       <td>{officer.pending}</td>
-                      <td>{officer.resolutionRate}%</td>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <div style={{ width: '50px', height: '6px', background: '#eee', borderRadius: '3px' }}>
+                            <div style={{ width: `${officer.resolutionRate}%`, height: '100%', background: '#4caf50', borderRadius: '3px' }}></div>
+                          </div>
+                          {officer.resolutionRate}%
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <div>No officer data available</div>
+            <div className="empty-state">No officers found. Add a new officer to get started.</div>
           )}
         </div>
       )}

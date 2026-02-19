@@ -108,5 +108,82 @@
     "is_read": false,
     "email_sent": false,
     "created_at": "2026-01-19T08:18:10.419Z"
+  },
+  {
+    "id": 11,
+    "user_id": 3,
+    "complaint_id": 7,
+    "type": "update",
+    "title": "Complaint Status Updated",
+    "message": "Your complaint (ID: CMP-20260118-007) status has been updated to: closed",
+    "is_read": false,
+    "email_sent": false,
+    "created_at": "2026-01-19T18:12:53.690Z"
+  },
+  {
+    "id": 12,
+    "user_id": 1,
+    "complaint_id": 18,
+    "type": "submission",
+    "title": "Complaint Submitted",
+    "message": "Your complaint (ID: CMP-MKLHZSJR-40EE3C) has been successfully submitted.",
+    "is_read": false,
+    "email_sent": false,
+    "created_at": "2026-01-19T18:27:49.966Z"
+  },
+  {
+    "id": 13,
+    "user_id": 1,
+    "complaint_id": 19,
+    "type": "submission",
+    "title": "Complaint Submitted",
+    "message": "Your complaint (ID: CMP-MKLI0IQU-1EGRH4) has been successfully submitted.",
+    "is_read": false,
+    "email_sent": false,
+    "created_at": "2026-01-19T18:28:23.913Z"
+  },
+  {
+    "id": 14,
+    "user_id": 1,
+    "complaint_id": 20,
+    "type": "submission",
+    "title": "Complaint Submitted",
+    "message": "Your complaint (ID: CMP-MKLI4EZ8-9VGMNJ) has been successfully submitted.",
+    "is_read": false,
+    "email_sent": false,
+    "created_at": "2026-01-19T18:31:25.654Z"
+  },
+  {
+    "id": 15,
+    "user_id": 3,
+    "complaint_id": 21,
+    "type": "submission",
+    "title": "Complaint Submitted",
+    "message": "Your complaint (ID: CMP-MKLIANCS-EZ70JG) has been successfully submitted.",
+    "is_read": false,
+    "email_sent": false,
+    "created_at": "2026-01-19T18:36:16.455Z"
+  },
+  {
+    "id": 16,
+    "user_id": 3,
+    "complaint_id": 22,
+    "type": "submission",
+    "title": "Complaint Submitted",
+    "message": "Your complaint (ID: CMP-MKLIARJ8-TS4OB3) has been successfully submitted.",
+    "is_read": false,
+    "email_sent": false,
+    "created_at": "2026-01-19T18:36:21.863Z"
+  },
+  {
+    "id": 17,
+    "user_id": 1,
+    "complaint_id": 23,
+    "type": "submission",
+    "title": "Complaint Submitted",
+    "message": "Your complaint (ID: CMP-ML23QB40-492V2C) has been successfully submitted.",
+    "is_read": false,
+    "email_sent": false,
+    "created_at": "2026-01-31T09:20:37.828Z"
   }
 ]
