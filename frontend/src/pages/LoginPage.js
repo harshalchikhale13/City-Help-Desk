@@ -93,13 +93,12 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Recharts Graph */}
-            <div style={{ width: '100%', height: 180 }}>
+            {/* Simple Graph Header Area */}
+            <div className="chart-visualization">
               <div className="mock-graph">
                 {chartData.map((d, i) => (
                   <div key={i} className="graph-bar-group">
                     <div className="bar-fill solved" style={{ height: `${d.solved}%` }}></div>
-                    <div className="bar-fill pending" style={{ height: `${d.pending}%` }}></div>
                     <span className="bar-label">{d.name}</span>
                   </div>
                 ))}

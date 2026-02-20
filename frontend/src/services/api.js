@@ -72,4 +72,10 @@ export const notificationAPI = {
   markAsRead: (id) => axiosInstance.put(`/notifications/${id}/read`),
 };
 
+// ========== AI ENDPOINTS ==========
+export const aiAPI = {
+  analyze: (data) => axiosInstance.post('/ai/analyze', data),
+  chat: (data) => axiosInstance.post('/ai/chat', data),
+};
+
 export default axiosInstance;

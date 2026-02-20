@@ -88,6 +88,10 @@ app.use('/api/complaints', complaintRoutes);
 // Notification routes
 app.use('/api/notifications', notificationRoutes);
 
+// AI routes
+const aiRoutes = require('./routes/aiRoutes');
+app.use('/api/ai', aiRoutes);
+
 // Admin routes (protected)
 app.use('/api/admin', adminRoutes);
 

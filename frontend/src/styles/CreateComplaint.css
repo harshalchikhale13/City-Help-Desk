@@ -2,20 +2,21 @@
 .create-complaint-container {
   max-width: 100%;
   margin: 0;
-  padding: 3rem;
+  padding: 1rem 2rem;
   width: 100%;
 }
 
 .create-complaint-card {
   background-color: white;
   border-radius: 0.75rem;
-  padding: 2rem;
+  padding: 1.25rem 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .create-complaint-card h1 {
   color: var(--primary-color);
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
 }
 
 .complaint-form {

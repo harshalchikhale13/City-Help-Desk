@@ -1,56 +1,135 @@
 /**
- * Advanced AI Service - Sentiment Analysis, Response Suggestions, Duplicate Detection
+ * Advanced AI Service - Sentiment, Categorization, Summarization, Chatbot Logic
  * Complements complaintAIService.js with advanced NLP capabilities
  */
 
-// Sentiment Analysis Keywords
+// ==========================================
+// 1. CONSTANTS & KEYWORDS
+// ==========================================
+
 const POSITIVE_WORDS = ['good', 'great', 'excellent', 'satisfied', 'pleased', 'grateful', 'appreciate', 'thanks', 'resolved', 'fixed', 'perfect'];
 const NEGATIVE_WORDS = ['bad', 'terrible', 'awful', 'angry', 'upset', 'frustrated', 'disgusted', 'poor', 'broken', 'fail', 'problem', 'worse', 'never', 'worst'];
-const URGENT_WORDS = ['emergency', 'urgent', 'critical', 'immediately', 'asap', 'danger', 'unsafe', 'risk', 'severe', 'serious', 'life-threatening'];
+const URGENT_WORDS = ['emergency', 'urgent', 'critical', 'immediately', 'asap', 'danger', 'unsafe', 'risk', 'severe', 'serious', 'life-threatening', 'fire', 'leak', 'spark', 'flood', 'accident'];
 
-// Response suggestion templates based on categories
+// Category Keywords Mapping
+const CATEGORY_KEYWORDS = {
+  'it_support': ['wifi', 'internet', 'network', 'login', 'password', 'computer', 'printer', 'projector', 'software', 'server', 'monitor', 'keyboard', 'mouse', 'slow'],
+  'electrical_issues': ['light', 'fan', 'switch', 'socket', 'power', 'blackout', 'spark', 'wire', 'fuse', 'ac', 'air conditioner', 'heater', 'tripped'],
+  'cleaning_issues': ['dirty', 'dust', 'garbage', 'trash', 'dustbin', 'smell', 'odor', 'stain', 'clean', 'mess', 'spill', 'washroom', 'toilet', 'overflow'],
+  'civil_infrastructure': ['door', 'window', 'glass', 'handle', 'lock', 'wall', 'paint', 'crack', 'roof', 'floor', 'tile', 'ceiling', 'water', 'leak'],
+  'hostel_issues': ['bed', 'mattress', 'roommate', 'mess', 'food', 'water cooler', 'wardrobe', 'hostel', 'curtain'],
+  'campus_safety': ['theft', 'lost', 'stolen', 'fight', 'harassment', 'security', 'guard', 'strange', 'suspicious', 'brawl', 'ragging'],
+  'library_issues': ['book', 'return', 'fine', 'librarian', 'silence', 'seat', 'table', 'magazine', 'journal']
+};
+
+// Response Templates
 const RESPONSE_TEMPLATES = {
-  'road-damage': [
-    'Thank you for reporting this road damage. We will inspect the area within 24-48 hours.',
-    'Your report has been forwarded to the Road Maintenance Department. Expected repair time: 3-5 days.',
-    'We appreciate your vigilance. A repair team will be assigned to this location shortly.'
+  'default': [
+    'Thank you for reporting this issue. We have received your complaint and will investigate shortly.',
+    'Your complaint has been registered. Our team will review the details and take necessary action.',
+    'We appreciate you bringing this to our attention. A support ticket has been created.'
   ],
-  'pothole': [
-    'Your pothole report is critical for our safety initiatives. We will prioritize this location.',
-    'This has been marked as high priority. Repair crew will visit within 24 hours.',
-    'Thank you for reporting. Our street maintenance team is already aware of this area.'
+  'campus_safety': [
+    'Your safety is our top priority. Security team has been alerted.',
+    'This incident has been flagged for immediate review by the Chief Security Officer.',
+    'Please stay safe. We are dispatching a security patrol to your location.'
   ],
-  'water-supply': [
-    'Water supply issues are our top priority. We will investigate immediately.',
-    'Your complaint has been escalated to the Water Board emergency response team.',
-    'We will send a technician to your location as soon as possible.'
-  ],
-  'sanitation': [
-    'We take sanitation seriously. Our cleaning team will address this area today.',
-    'Your report helps us maintain community hygiene standards. We will act immediately.',
-    'Thank you for reporting. Sanitation workers have been notified.'
-  ],
-  'street-lighting': [
-    'We are committed to community safety. The lighting issue will be resolved within 2-3 days.',
-    'Your concern about street lighting is important. Maintenance team has been assigned.',
-    'We will schedule a repair as soon as possible to ensure safe public spaces.'
-  ],
-  'public-facilities': [
-    'We appreciate your report on public facility conditions. We will inspect and repair shortly.',
-    'Your feedback helps us improve community spaces. Action will be taken within 48 hours.',
-    'Maintenance crew will visit the location to assess and repair the issue.'
-  ],
-  'noise-pollution': [
-    'Noise complaints are important to us. We will investigate and take necessary action.',
-    'Our environmental health team will look into this matter.',
-    'Thank you for helping us maintain a peaceful community environment.'
-  ],
-  'air-quality': [
-    'Air quality is a priority concern. We will investigate the source of the issue.',
-    'Your complaint has been logged with our environmental monitoring team.',
-    'We will conduct air quality tests in your area.'
+  'it_support': [
+    'An IT ticket has been raised. A technician will contact you shortly.',
+    'We are looking into the network issue. Service should be restored soon.',
+    'Please try restarting your device while we check the backend systems.'
   ]
 };
+
+// ==========================================
+// 2. CORE FUNCTIONS
+// ==========================================
+
+/**
+ * Predicts category based on description text
+ * Returns: { category: string, confidence: number, keywords: [] }
+ */
+function predictCategory(text) {
+  if (!text) return { category: 'other', confidence: 0, keywords: [] };
+
+  const lowerText = text.toLowerCase();
+  let bestCategory = 'other';
+  let maxScore = 0;
+  let matchedKeywords = [];
+
+  Object.entries(CATEGORY_KEYWORDS).forEach(([category, keywords]) => {
+    let score = 0;
+    const currentMatches = [];
+
+    keywords.forEach(word => {
+      if (lowerText.includes(word)) {
+        score += 1;
+        currentMatches.push(word);
+      }
+    });
+
+    if (score > maxScore) {
+      maxScore = score;
+      bestCategory = category;
+      matchedKeywords = currentMatches;
+    }
+  });
+
+  // Calculate confidence (capped at 100%)
+  const confidence = maxScore > 0 ? Math.min(100, 30 + (maxScore * 15)) : 0;
+
+  return {
+    category: bestCategory,
+    confidence,
+    keywords: matchedKeywords
+  };
+}
+
+/**
+ * Predicts priority based on keywords and sentiment
+ * Returns: { priority: 'low'|'medium'|'high', reason: string }
+ */
+function predictPriority(text) {
+  if (!text) return { priority: 'medium', reason: 'Default' };
+
+  const lowerText = text.toLowerCase();
+
+  // Check for urgent keywords
+  for (const word of URGENT_WORDS) {
+    if (lowerText.includes(word)) {
+      return { priority: 'high', reason: `Detected urgent keyword: "${word}"` };
+    }
+  }
+
+  // Check for specific high intensity words
+  if (lowerText.includes('unsafe') || lowerText.includes('dangerous') || lowerText.includes('hurt')) {
+    return { priority: 'high', reason: 'Safety concern detected' };
+  }
+
+  // Medium priority checks
+  if (lowerText.includes('not working') || lowerText.includes('broken') || lowerText.includes('fail')) {
+    return { priority: 'medium', reason: 'Functional issue detected' };
+  }
+
+  return { priority: 'low', reason: 'Routine request' };
+}
+
+/**
+ * Generates a short summary of the complaint
+ * Returns: string
+ */
+function summarizeComplaint(text) {
+  if (!text) return '';
+  if (text.length < 50) return text;
+
+  // Simple heuristic: First sentence or first 100 chars
+  const firstSentence = text.split(/[.!?]/)[0];
+  if (firstSentence.length > 20 && firstSentence.length < 100) {
+    return firstSentence + '.';
+  }
+
+  return text.substring(0, 97) + '...';
+}
 
 /**
  * Analyzes sentiment of complaint description
@@ -58,7 +137,7 @@ const RESPONSE_TEMPLATES = {
  */
 function analyzeSentiment(text) {
   if (!text) return { sentiment: 'neutral', score: 50, keywords: [] };
-  
+
   const lowerText = text.toLowerCase();
   let positiveCount = 0;
   let negativeCount = 0;
@@ -113,12 +192,16 @@ function analyzeSentiment(text) {
 
 /**
  * Generates response suggestions based on category and sentiment
- * Returns: { suggestions: [], tone: 'empathetic'|'professional'|'urgent' }
  */
 function generateResponseSuggestions(category, sentiment, priority) {
-  const templates = RESPONSE_TEMPLATES[category.toLowerCase().replace(/\s+/g, '-')] || 
-                   RESPONSE_TEMPLATES['public-facilities'];
-  
+  let templates = RESPONSE_TEMPLATES[category] || RESPONSE_TEMPLATES['default'];
+
+  // If no specific category template, try to find a partial match
+  if (!RESPONSE_TEMPLATES[category]) {
+    const parentCat = Object.keys(RESPONSE_TEMPLATES).find(k => category.includes(k));
+    if (parentCat) templates = RESPONSE_TEMPLATES[parentCat];
+  }
+
   let tone = 'professional';
   if (sentiment === 'urgent' || priority === 'high') {
     tone = 'urgent';
@@ -126,45 +209,28 @@ function generateResponseSuggestions(category, sentiment, priority) {
     tone = 'empathetic';
   }
 
-  // Select suggestions based on tone
-  let suggestions = [];
-  if (tone === 'urgent') {
-    suggestions = templates.slice(0, 2);
-  } else if (tone === 'empathetic') {
-    suggestions = [templates[templates.length - 1], ...templates.slice(0, 1)];
-  } else {
-    suggestions = templates;
-  }
-
-  // Enhance suggestions with sentiment-aware closings
-  const closings = {
-    urgent: 'This is our priority. We will keep you updated.',
-    empathetic: 'Your concern matters to us. We are here to help.',
-    professional: 'Thank you for your cooperation.'
-  };
-
-  suggestions = suggestions.map(s => `${s} ${closings[tone]}`);
+  // Adjust suggestion based on tone (mock logic)
+  const suggestion = templates[Math.floor(Math.random() * templates.length)];
 
   return {
-    suggestions,
+    suggestions: [suggestion],
     tone,
     confidence: 0.85,
-    category: category,
-    priority: priority
+    category,
+    priority
   };
 }
 
 /**
  * Detects duplicate/similar complaints using text similarity
- * Returns: { isDuplicate: boolean, similarComplaints: [], similarity: 0-100 }
  */
 function findSimilarComplaints(newComplaint, existingComplaints) {
   const similarities = [];
 
   existingComplaints.forEach(existing => {
     const similarity = calculateTextSimilarity(
-      newComplaint.description + ' ' + newComplaint.category,
-      existing.description + ' ' + existing.category
+      (newComplaint.description || '') + ' ' + (newComplaint.category || ''),
+      (existing.description || '') + ' ' + (existing.category || '')
     );
 
     if (similarity > 40) {
@@ -176,89 +242,81 @@ function findSimilarComplaints(newComplaint, existingComplaints) {
     }
   });
 
-  // Sort by similarity descending
   similarities.sort((a, b) => b.similarity - a.similarity);
 
   return {
     hasDuplicates: similarities.some(s => s.isDuplicate),
     totalSimilar: similarities.length,
-    similar: similarities.slice(0, 5), // Top 5 similar complaints
+    similar: similarities.slice(0, 5),
     duplicates: similarities.filter(s => s.isDuplicate),
-    recommendation: similarities.length > 0 
-      ? similarities[0].isDuplicate 
-        ? 'This appears to be a duplicate complaint. Consider merging with existing complaint.'
-        : 'Similar complaints found. Review before processing.'
-      : 'No similar complaints detected.'
+    recommendation: similarities.length > 0
+      ? similarities[0].isDuplicate
+        ? 'Possible duplicate detected.'
+        : 'Similar issues exist.' // Simplified message
+      : 'Unique issue.'
   };
 }
 
 /**
- * Calculate text similarity using Levenshtein-like algorithm
- * Returns: similarity percentage (0-100)
+ * Calculate text similarity using Jaccard index
  */
 function calculateTextSimilarity(text1, text2) {
   const s1 = text1.toLowerCase().trim();
   const s2 = text2.toLowerCase().trim();
 
-  // Extract key words
   const words1 = s1.split(/\s+/).filter(w => w.length > 3);
   const words2 = s2.split(/\s+/).filter(w => w.length > 3);
 
-  // Calculate Jaccard similarity
-  const intersection = new Set([...words1].filter(x => words2.includes(x)));
-  const union = new Set([...words1, ...words2]);
+  if (words1.length === 0 || words2.length === 0) return 0;
 
-  const similarity = (intersection.size / union.size) * 100;
+  const set1 = new Set(words1);
+  const set2 = new Set(words2);
 
-  // Bonus for exact substring match
-  if (s2.includes(s1) || s1.includes(s2)) {
-    return Math.min(100, similarity + 20);
-  }
+  const intersection = new Set([...set1].filter(x => set2.has(x)));
+  const union = new Set([...set1, ...set2]);
 
-  return similarity;
+  return (intersection.size / union.size) * 100;
 }
 
 /**
  * Analyzes complete complaint with all advanced features
- * Returns comprehensive analysis object
  */
 function analyzeComplaintComprehensive(complaint, existingComplaints = []) {
   const sentiment = analyzeSentiment(complaint.description);
-  const responses = generateResponseSuggestions(
-    complaint.category, 
-    sentiment.sentiment, 
-    complaint.priority
-  );
+  const categoryPrediction = predictCategory(complaint.description);
+  const priorityPrediction = predictPriority(complaint.description);
+  const summary = summarizeComplaint(complaint.description);
   const similar = findSimilarComplaints(complaint, existingComplaints);
+  const responses = generateResponseSuggestions(
+    categoryPrediction.category !== 'other' ? categoryPrediction.category : complaint.category,
+    sentiment.sentiment,
+    priorityPrediction.priority
+  );
 
   return {
     sentimentAnalysis: sentiment,
+    categoryPrediction,
+    priorityPrediction,
+    summary,
     responsesuggestions: responses,
     similarComplaints: similar,
     aiScore: {
-      overall: Math.round(
-        (sentiment.score * 0.3 + (100 - similar.totalSimilar * 5) * 0.3 + 75 * 0.4)
-      ),
-      sentiment: sentiment.score,
-      uniqueness: Math.max(0, 100 - similar.totalSimilar * 5),
-      quality: 75
-    },
-    recommendations: [
-      ...similar.hasDuplicates ? ['Merge with similar complaint'] : [],
-      sentiment.hasUrgentWords ? ['Flag as priority for faster response'] : [],
-      sentiment.emotionalIntensity > 3 ? ['Assign experienced officer'] : [],
-      responses.tone === 'empathetic' ? ['Include apology in response'] : []
-    ]
+      urgency: priorityPrediction.priority === 'high' ? 90 : 50,
+      quality: 80
+    }
   };
 }
 
-// Export all functions
 module.exports = {
+  predictCategory,
+  predictPriority,
+  summarizeComplaint,
   analyzeSentiment,
   generateResponseSuggestions,
   findSimilarComplaints,
   calculateTextSimilarity,
   analyzeComplaintComprehensive,
+  CATEGORY_KEYWORDS,
   RESPONSE_TEMPLATES,
   POSITIVE_WORDS,
   NEGATIVE_WORDS,

@@ -6,7 +6,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { complaintAPI } from '../services/api';
-import { formatDate, getStatusColor, getStatusLabel, getPriorityColor } from '../utils/helpers';
 import { toast } from 'react-toastify';
 import '../styles/Dashboard.css';
 
@@ -17,7 +16,7 @@ export default function DashboardPage() {
     status: '',
     category: '',
     priority: '',
-    limit: 10,
+    limit: 50, // Increased limit for better visibility
     offset: 0,
   });
   const [total, setTotal] = useState(0);
@@ -25,18 +24,8 @@ export default function DashboardPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Admins should be on the admin dashboard
-    if (user?.role === 'admin') {
-      navigate('/admin');
-      return;
-    }
-  }, [user, navigate]);
-
-  useEffect(() => {
-    // Only fetch if not admin
-    if (user?.role !== 'admin') {
-      fetchComplaints();
-    }
+    // Fetch complaints when filters change
+    fetchComplaints();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
@@ -47,8 +36,8 @@ export default function DashboardPage() {
 
       // Fetch all complaints for all users
       const response = await complaintAPI.getAllComplaints(params);
-      setComplaints(response.data.data.complaints);
-      setTotal(response.data.data.total);
+      setComplaints(response.data.data.complaints || []);
+      setTotal(response.data.data.total || 0);
     } catch (error) {
       toast.error('Failed to fetch issues');
       console.error(error);
@@ -77,154 +66,180 @@ export default function DashboardPage() {
 
   const formatLocation = (c) => {
     const parts = [];
-    if (c.issue_location) parts.push(c.issue_location);
-    if (c.building_name) parts.push(c.building_name);
-    if (c.room_number) parts.push(c.room_number);
-    return parts.join(' - ') || 'N/A';
+    if (c.buildingName) parts.push(c.buildingName);
+    if (c.roomNumber) parts.push(`Room ${c.roomNumber}`);
+    if (c.issueLocation) parts.push(c.issueLocation);
+
+    // Fallback if fields are different (e.g. from old data)
+    if (parts.length === 0 && c.building_name) parts.push(c.building_name);
+    if (parts.length === 0 && c.room_number) parts.push(c.room_number);
+    if (parts.length === 0 && c.issue_location) parts.push(c.issue_location);
+
+    if (parts.length === 0) return 'N/A';
+    return parts.join(' - ');
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'submitted': return '#6366f1';
+      case 'in_progress': return '#f59e0b';
+      case 'resolved': return '#10b981';
+      case 'closed': return '#94a3b8';
+      default: return '#cbd5e1';
+    }
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'high': return '#ef4444'; // Red
+      case 'medium': return '#f59e0b'; // Orange
+      case 'low': return '#3b82f6'; // Blue
+      default: return '#cbd5e1';
+    }
   };
 
   return (
-    <div style={{ width: '100%', padding: 0 }}>
-
-      {/* ===== Page Header ===== */}
-      <div className="page-header">
+    <div className="dashboard-page fade-in">
+      <header className="page-header header-dashboard">
+        <div className="header-accent-dot"></div>
         <div className="page-header-inner">
           <div>
             <h1>
-              {user?.role === 'staff' ? '🏢 Staff Issues Dashboard' : '🎓 My Reported Issues'}
+              {user?.role === 'staff' ? '🏢 Staff Issues Dashboard' :
+                user?.role === 'admin' ? '🛡️ All Campus Issues' : '🎓 My Reported Issues'}
             </h1>
             <p>
               {user?.role === 'staff'
-                ? 'Track and manage issues you have reported as staff'
-                : 'Track the status of your campus issue reports'}
+                ? 'Track and manage issues assigned to your department'
+                : user?.role === 'admin'
+                  ? 'View and manage all reported issues across the campus'
+                  : 'Track the status and progress of your campus issue reports'}
             </p>
           </div>
+
           {(user?.role === 'student' || user?.role === 'staff') && (
-            <div className="page-header-actions">
-              <button
-                style={{
-                  background: 'linear-gradient(135deg, #ef4444, #8b5cf6)',
-                  border: 'none',
-                  color: '#fff',
-                  padding: '10px 22px',
-                  borderRadius: '10px',
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  fontSize: '0.95rem',
-                  boxShadow: '0 4px 14px rgba(139,92,246,0.4)',
-                }}
-                onClick={() => navigate('/complaint/create')}
-              >
-                ✏️ Report New Issue
-              </button>
-            </div>
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate('/complaint/create')}
+            >
+              <span>✏️</span> Report New Issue
+            </button>
           )}
         </div>
-      </div>
+      </header>
 
-      <div className="page-content" style={{ background: 'transparent' }}>
-
+      <div className="page-content">
         {/* Filters */}
         <div className="filters-section">
-          <select
-            name="status"
-            value={filters.status}
-            onChange={handleFilterChange}
-            className="filter-select"
-          >
-            <option value="">All Status</option>
-            <option value="submitted">Submitted</option>
-            <option value="assigned">Assigned</option>
-            <option value="in_progress">In Progress</option>
-            <option value="resolved">Resolved</option>
-            <option value="closed">Closed</option>
-          </select>
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <select
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Status</option>
+              <option value="submitted">Submitted</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
 
-          <select
-            name="category"
-            value={filters.category}
-            onChange={handleFilterChange}
-            className="filter-select"
-          >
-            <option value="">All Categories</option>
-            <option value="hostel_issues">Hostel Issues</option>
-            <option value="classroom_issues">Classroom Issues</option>
-            <option value="laboratory_issues">Laboratory Issues</option>
-            <option value="it_support">IT Support</option>
-            <option value="library_issues">Library Issues</option>
-            <option value="campus_infrastructure">Campus Infrastructure</option>
-            <option value="campus_safety">Campus Safety</option>
-          </select>
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <select
+              name="category"
+              value={filters.category}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Categories</option>
+              <option value="hostel_issues">Hostel Issues</option>
+              <option value="classroom_issues">Classroom Issues</option>
+              <option value="laboratory_issues">Laboratory Issues</option>
+              <option value="it_support">IT Support</option>
+              <option value="library_issues">Library Issues</option>
+              <option value="campus_infrastructure">Campus Infrastructure</option>
+              <option value="campus_safety">Campus Safety</option>
+              <option value="electrical_issues">Electrical Issues</option>
+              <option value="cleaning_issues">Cleaning/Housekeeping</option>
+            </select>
+          </div>
 
-          <select
-            name="priority"
-            value={filters.priority}
-            onChange={handleFilterChange}
-            className="filter-select"
-          >
-            <option value="">All Priority</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <select
+              name="priority"
+              value={filters.priority}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Priority</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
         </div>
 
         {/* Complaints List */}
-        <div className="complaints-list">
+        <div className="complaints-list" style={{ background: 'white', borderRadius: '16px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
           {loading ? (
-            <div className="loading">Loading issues...</div>
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading issues...</div>
           ) : complaints.length === 0 ? (
-            <div className="empty-state">
-              <p>No issues found</p>
+            <div className="empty-state" style={{ padding: '60px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📋</div>
+              <h3>No issues found</h3>
+              <p>You haven't reported any issues yet, or none match your filters.</p>
             </div>
           ) : (
             <div className="table-responsive">
-              <table className="complaints-table">
-                <thead>
+              <table className="complaints-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead style={{ background: '#f8fafc', borderBottom: '1px solid var(--border-color)' }}>
                   <tr>
-                    <th>Issue ID</th>
-                    <th>Category</th>
-                    <th>Location</th>
-                    <th>Description</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Reported On</th>
-                    <th>Action</th>
+                    <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Issue ID</th>
+                    <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Category</th>
+                    <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Location</th>
+                    <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Description</th>
+                    <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Priority</th>
+                    <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Status</th>
+                    <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {complaints.map((complaint) => (
-                    <tr key={complaint.id}>
-                      <td className="complaint-id">{complaint.complaint_id}</td>
-                      <td>{formatCategory(complaint.category)}</td>
-                      <td>{formatLocation(complaint)}</td>
-                      <td className="description">
-                        {complaint.description.substring(0, 40)}...
+                    <tr
+                      key={complaint.id}
+                      style={{ borderBottom: '1px solid var(--border-color)', cursor: 'pointer', transition: 'background 0.2s' }}
+                      onClick={() => handleViewComplaint(complaint.complaint_id || complaint.id)}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                    >
+                      <td style={{ padding: '10px 12px', fontWeight: '600', color: 'var(--text-primary)' }}>{complaint.complaint_id}</td>
+                      <td style={{ padding: '10px 12px', color: 'var(--text-primary)' }}>{formatCategory(complaint.category)}</td>
+                      <td style={{ padding: '10px 12px', color: 'var(--text-secondary)' }}>{formatLocation(complaint)}</td>
+                      <td style={{ padding: '10px 12px', color: 'var(--text-secondary)', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {complaint.description}
                       </td>
-                      <td>
-                        <span
-                          className="priority-badge"
-                          style={{ backgroundColor: getPriorityColor(complaint.priority) }}
-                        >
-                          {complaint.priority.charAt(0).toUpperCase() + complaint.priority.slice(1)}
+                      <td style={{ padding: '10px 12px' }}>
+                        <span style={{
+                          padding: '4px 12px',
+                          borderRadius: '20px',
+                          fontSize: '0.7rem',
+                          fontWeight: '700',
+                          textTransform: 'uppercase',
+                          backgroundColor: getPriorityColor(complaint.priority) + '20',
+                          color: getPriorityColor(complaint.priority)
+                        }}>
+                          {complaint.priority.toUpperCase()}
                         </span>
                       </td>
-                      <td>
-                        <span
-                          className="status-badge"
-                          style={{ backgroundColor: getStatusColor(complaint.status) }}
-                        >
-                          {getStatusLabel(complaint.status)}
-                        </span>
+                      <td style={{ padding: '10px 12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: getStatusColor(complaint.status) }}></span>
+                          <span style={{ fontWeight: '500', fontSize: '0.85rem', color: 'var(--text-primary)', textTransform: 'capitalize' }}>
+                            {complaint.status.replace('_', ' ')}
+                          </span>
+                        </div>
                       </td>
-                      <td>{formatDate(complaint.created_at)}</td>
-                      <td>
-                        <button
-                          className="btn-view"
-                          onClick={() => handleViewComplaint(complaint.id)}
-                        >
-                          View
-                        </button>
+                      <td style={{ padding: '10px 12px', color: 'var(--text-tertiary)', fontSize: '0.85rem' }}>
+                        {new Date(complaint.created_at).toLocaleDateString()}
                       </td>
                     </tr>
                   ))}
@@ -236,13 +251,11 @@ export default function DashboardPage() {
 
         {/* Pagination Info */}
         {complaints.length > 0 && (
-          <div className="pagination-info">
-            <p>
-              Showing {complaints.length} of {total} issues
-            </p>
+          <div className="pagination-info" style={{ marginTop: '20px', textAlign: 'right', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            Showing {complaints.length} of {total} issues
           </div>
         )}
-      </div>{/* page-content */}
+      </div>
     </div>
   );
 }

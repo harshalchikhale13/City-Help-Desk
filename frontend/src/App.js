@@ -18,15 +18,17 @@ import ComplaintDetailPage from './pages/ComplaintDetailPage';
 import CreateComplaintPage from './pages/CreateComplaintPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import UserManagementPage from './pages/UserManagementPage';
+import AdminIssueManagementPage from './pages/AdminIssueManagementPage';
+import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Layouts
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Sidebar from './components/Sidebar';
+import AIChatbot from './components/AIChatbot';
 
 // Protected Route Component
-const ProtectedRoute = ({ element, allowedRoles = [] }) => {
+const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) {
@@ -38,7 +40,7 @@ const ProtectedRoute = ({ element, allowedRoles = [] }) => {
     return <Navigate to={user?.role === 'admin' ? '/admin' : '/dashboard'} />;
   }
 
-  return element;
+  return children;
 };
 
 function AppContent() {
@@ -50,55 +52,63 @@ function AppContent() {
 
   return (
     <div className="app">
-      {isAuthenticated && <Navbar />}
+      {isAuthenticated && <Sidebar />}
 
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+      <main className="main-content">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
+          <Route path="/register" element={!isAuthenticated ? <RegisterPage /> : <Navigate to="/" />} />
 
-        {/* Student & Staff Routes */}
-        <Route
-          path="/dashboard"
-          element={<ProtectedRoute element={<DashboardPage />} allowedRoles={['student', 'staff']} />}
-        />
-        <Route
-          path="/complaint/create"
-          element={<ProtectedRoute element={<CreateComplaintPage />} allowedRoles={['student', 'staff']} />}
-        />
-        <Route
-          path="/complaint/:id"
-          element={<ProtectedRoute element={<ComplaintDetailPage />} />}
-        />
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={<ProtectedRoute allowedRoles={['student', 'staff', 'admin']}><DashboardPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/complaint/create"
+            element={<ProtectedRoute allowedRoles={['student', 'staff']}><CreateComplaintPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/complaint/:id"
+            element={<ProtectedRoute><ComplaintDetailPage /></ProtectedRoute>}
+          />
 
-        {/* Admin Routes */}
-        <Route
-          path="/admin"
-          element={<ProtectedRoute element={<AdminDashboardPage />} allowedRoles={['admin']} />}
-        />
-        <Route
-          path="/admin/users"
-          element={<ProtectedRoute element={<UserManagementPage />} allowedRoles={['admin']} />}
-        />
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/users"
+            element={<ProtectedRoute allowedRoles={['admin']}><UserManagementPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/issues"
+            element={<ProtectedRoute allowedRoles={['admin']}><AdminIssueManagementPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/analytics"
+            element={<ProtectedRoute allowedRoles={['admin']}><AdminAnalyticsPage /></ProtectedRoute>}
+          />
 
-        {/* Profile (all roles) */}
-        <Route
-          path="/profile"
-          element={<ProtectedRoute element={<ProfilePage />} />}
-        />
+          <Route
+            path="/profile"
+            element={<ProtectedRoute><ProfilePage /></ProtectedRoute>}
+          />
 
-        {/* Default redirect based on role */}
-        <Route path="/" element={
-          isAuthenticated
-            ? user?.role === 'admin'
-              ? <Navigate to="/admin" />
-              : <Navigate to="/dashboard" />
-            : <Navigate to="/login" />
-        } />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route path="/" element={
+            isAuthenticated
+              ? (user?.role === 'admin' ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />)
+              : <Navigate to="/login" />
+          } />
 
-      {isAuthenticated && <Footer />}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </main>
+
+      {/* Global Components */}
+      {isAuthenticated && <AIChatbot />}
       <ToastContainer position="bottom-right" autoClose={3000} />
     </div>
   );

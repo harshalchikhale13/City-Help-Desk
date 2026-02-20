@@ -19,6 +19,21 @@ router.post(
   complaintController.createComplaint
 );
 
+// Get complaint statistics (admin and staff) - MUST be before /:id
+router.get(
+  '/stats/overview',
+  authenticateToken,
+  isAdminOrOfficer,
+  complaintController.getComplaintStats
+);
+
+// Get all complaints with filters (any authenticated user)
+router.get(
+  '/',
+  authenticateToken,
+  complaintController.getAllComplaints
+);
+
 // Get complaint by ID
 router.get(
   '/:id',
@@ -31,13 +46,6 @@ router.get(
   '/:id/history',
   authenticateToken,
   complaintController.getComplaintHistory
-);
-
-// Get all complaints with filters (any authenticated user)
-router.get(
-  '/',
-  authenticateToken,
-  complaintController.getAllComplaints
 );
 
 // Update complaint status (admin and staff only)
@@ -62,14 +70,6 @@ router.post(
   authenticateToken,
   isAdminOrOfficer,
   complaintController.addComplaintUpdate
-);
-
-// Get complaint statistics (admin and staff)
-router.get(
-  '/stats/overview',
-  authenticateToken,
-  isAdminOrOfficer,
-  complaintController.getComplaintStats
 );
 
 module.exports = router;

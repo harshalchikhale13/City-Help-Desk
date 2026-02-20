@@ -2,7 +2,7 @@
 .dashboard-container {
   max-width: 100%;
   margin: 0;
-  padding: 3rem;
+  padding: 1.5rem;
   background: transparent;
   min-height: 100vh;
 }
@@ -11,9 +11,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   background: white;
-  padding: 2.5rem;
+  padding: 1.5rem 2rem;
   border-radius: 1rem;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-color);
@@ -31,15 +31,16 @@
 }
 
 .filters-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
   background: white;
-  padding: 2rem;
+  padding: 1.25rem 1.5rem;
   border-radius: 1rem;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
+  align-items: center;
 }
 
 .filter-select {
@@ -83,21 +84,22 @@
 }
 
 .complaints-table th {
-  padding: 1.25rem 1.5rem;
+  padding: 0.75rem 1rem;
   text-align: left;
   font-weight: 700;
   color: #4b5563;
   border-bottom: 2px solid var(--border-color);
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .complaints-table td {
-  padding: 1.25rem 1.5rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 0.9rem;
   vertical-align: middle;
 }
 

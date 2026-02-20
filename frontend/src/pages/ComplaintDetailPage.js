@@ -151,147 +151,203 @@ export default function ComplaintDetailPage() {
   }
 
   return (
-    <div className="complaint-detail-container">
-      {/* Header */}
-      <div className="detail-header">
-        <div>
-          <div className="header-badges">
-            <StatusBadge status={complaint.status} />
-            <PriorityBadge priority={complaint.priority} />
+    <div className="complaint-detail-page fade-in">
+      {/* ===== Page Header ===== */}
+      <header className="page-header header-profile">
+        <div className="header-accent-dot"></div>
+        <div className="page-header-inner">
+          <div>
+            <div className="header-badges" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+              <StatusBadge status={complaint.status} />
+              <PriorityBadge priority={complaint.priority} />
+            </div>
+            <h1>Issue #{complaint.complaint_id}</h1>
+            <p>{complaint.description.length > 80 ? complaint.description.substring(0, 80) + '...' : complaint.description}</p>
           </div>
-          <h1>
-            Issue #{complaint.complaint_id}
-          </h1>
-          <p className="header-desc">{complaint.description}</p>
+          <div>
+            <button className="btn btn-secondary" onClick={() => navigate(-1)}>
+              ← Back to List
+            </button>
+          </div>
         </div>
-        <Button variant="secondary" onClick={() => navigate(-1)} className="back-btn">
-          ← Back
-        </Button>
-      </div>
+      </header>
 
-      {/* Main Content Grid */}
-      <div className="detail-grid">
-        {/* Left Column: Details */}
-        <div className="detail-main">
+      <div className="page-content">
 
-          {/* Issue Details - Merged with Location Info */}
-          <Card className="modern-card">
-            <h3>📋 Issue Details</h3>
-            <div className="detail-section">
-              <div className="detail-row">
-                <span className="label">Category</span>
-                <span className="value">
-                  {getCategoryIcon(complaint.category)} {complaint.category.replace(/_/g, ' ')}
+        {/* Main Content Grid */}
+        <div className="detail-grid">
+          {/* Left Column: Details */}
+          <div className="detail-main">
+
+            {/* 1. Category & Date Card */}
+            <Card className="modern-card" style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 style={{ margin: 0 }}>📋 Issue Metadata</h3>
+                <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '500' }}>
+                  ID: #{complaint.complaint_id}
                 </span>
               </div>
-
-              <div className="detail-row">
-                <span className="label">Reported Date</span>
-                <span className="value">
-                  {new Date(complaint.created_at).toLocaleDateString('en-IN', {
-                    weekday: 'short',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </span>
-              </div>
-
-              <div className="detail-row">
-                <span className="label">Student ID</span>
-                <span className="value">{complaint.student_id || 'N/A'}</span>
-              </div>
-
-              {complaint.department && (
+              <div className="detail-section">
                 <div className="detail-row">
-                  <span className="label">Department</span>
-                  <span className="value">{complaint.department}</span>
+                  <span className="label">Category</span>
+                  <span className="value" style={{ fontWeight: '700', color: '#4f46e5' }}>
+                    {getCategoryIcon(complaint.category)} {complaint.category.replace(/_/g, ' ')}
+                  </span>
                 </div>
-              )}
-            </div>
-
-
-          </Card>
-        </div>
-
-        {/* Right Column: Sidebar */}
-        <div className="detail-sidebar">
-          {/* Progress */}
-          <Card className="progress-card modern-card">
-            <h3>⏳ Monitor Progress</h3>
-            <div className="progress-stepper">
-              {['Submitted', 'In Progress', 'Resolved', 'Closed'].map((step, index) => {
-                const statusOrder = ['submitted', 'in-progress', 'resolved', 'closed']; // fixed typo in-progress
-                const currentIdx = statusOrder.indexOf(complaint.status);
-                const isCompleted = index <= currentIdx;
-
-                // Handle slight variations in status naming if backend differs
-                // Assuming 'in-progress' vs 'in_progress'
-
-                return (
-                  <div
-                    key={index}
-                    className={`progress-step ${isCompleted ? 'completed' : ''}`}
-                  >
-                    <div className="step-dot" />
-                    <div className="step-label">{step}</div>
-                  </div>
-                )
-              })}
-            </div>
-          </Card>
-
-
-          {/* Estimated Resolution */}
-          <Card className="estimate-card modern-card gradient-card">
-            <h3>📅 Estimated Resolution</h3>
-            <div className="estimate-content">
-              <p className="estimate-time">3-5 business days</p>
-              <p className="estimate-note">Standard turnaround for campus issues</p>
-            </div>
-          </Card>
-
-          {/* Actions */}
-          <Card className="actions-card modern-card">
-            <h3>⚙️ Actions</h3>
-            <Button variant="secondary" style={{ width: '100%', marginBottom: '10px' }}>
-              📞 Contact Admin
-            </Button>
-
-            {user && (user.role === 'admin' || user.role === 'department_officer') && (
-              <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#555' }}>👮 Admin Actions</h4>
-                {!showAssignUI ? (
-                  <Button variant="primary" style={{ width: '100%', background: '#2c3e50' }} onClick={() => setShowAssignUI(true)}>
-                    Assign Staff
-                  </Button>
-                ) : (
-                  <div className="assign-box">
-                    <select
-                      style={{ width: '100%', padding: '8px', marginBottom: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
-                      value={selectedOfficer}
-                      onChange={(e) => setSelectedOfficer(e.target.value)}
-                    >
-                      <option value="">Select Staff</option>
-                      {officers.map(off => (
-                        <option key={off.id} value={off.id}>{off.name} ({off.department})</option>
-                      ))}
-                    </select>
-                    <div style={{ display: 'flex', gap: '5px' }}>
-                      <Button variant="primary" onClick={handleAssignOfficer} disabled={!selectedOfficer} style={{ flex: 1, fontSize: '12px' }}>
-                        Confirm
-                      </Button>
-                      <Button variant="secondary" onClick={() => setShowAssignUI(false)} style={{ flex: 1, fontSize: '12px' }}>
-                        Cancel
-                      </Button>
-                    </div>
+                <div className="detail-row">
+                  <span className="label">Reported Date</span>
+                  <span className="value">
+                    {new Date(complaint.created_at).toLocaleDateString('en-IN', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">Student ID</span>
+                  <span className="value">#{complaint.student_id || 'N/A'}</span>
+                </div>
+                {complaint.department && (
+                  <div className="detail-row">
+                    <span className="label">Department</span>
+                    <span className="value">{complaint.department}</span>
                   </div>
                 )}
               </div>
+            </Card>
+
+            {/* 2. Full Description Card */}
+            <Card className="modern-card" style={{ marginBottom: '24px' }}>
+              <h3>📝 Issue Description</h3>
+              <div style={{
+                background: '#f8fafc',
+                padding: '24px',
+                borderRadius: '16px',
+                border: '1px solid #f1f5f9',
+                color: '#475569',
+                lineHeight: '1.8',
+                fontSize: '1.1rem',
+                whiteSpace: 'pre-wrap'
+              }}>
+                {complaint.description}
+              </div>
+            </Card>
+
+            {/* 3. Detailed Location Card */}
+            <Card className="modern-card" style={{ marginBottom: '24px' }}>
+              <h3>📍 Location Details</h3>
+              <div className="detail-grid-mini" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div style={{ padding: '16px', background: '#f5f3ff', borderRadius: '12px' }}>
+                  <span className="label" style={{ display: 'block', marginBottom: '4px', fontSize: '0.75rem' }}>Area Type</span>
+                  <span className="value" style={{ fontWeight: '700', color: '#7c3aed' }}>{complaint.issueLocation || 'Campus Area'}</span>
+                </div>
+                <div style={{ padding: '16px', background: '#f5f3ff', borderRadius: '12px' }}>
+                  <span className="label" style={{ display: 'block', marginBottom: '4px', fontSize: '0.75rem' }}>Building</span>
+                  <span className="value" style={{ fontWeight: '700', color: '#7c3aed' }}>{complaint.buildingName || 'N/A'}</span>
+                </div>
+                <div style={{ padding: '16px', background: '#f5f3ff', borderRadius: '12px' }}>
+                  <span className="label" style={{ display: 'block', marginBottom: '4px', fontSize: '0.75rem' }}>Room / Office</span>
+                  <span className="value" style={{ fontWeight: '700', color: '#7c3aed' }}>{complaint.roomNumber || 'N/A'}</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* 4. Attachment Card */}
+            {complaint.imageUrl && (
+              <Card className="modern-card">
+                <h3>🖼️ Attachment Ref</h3>
+                <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid #f1f5f9' }}>
+                  <img
+                    src={complaint.imageUrl}
+                    alt="Issue reference"
+                    style={{ width: '100%', display: 'block' }}
+                  />
+                </div>
+              </Card>
             )}
-          </Card>
+          </div>
+
+          {/* Right Column: Sidebar */}
+          <div className="detail-sidebar">
+            {/* Progress */}
+            <Card className="progress-card modern-card">
+              <h3>⏳ Monitor Progress</h3>
+              <div className="progress-stepper">
+                {['Submitted', 'In Progress', 'Resolved', 'Closed'].map((step, index) => {
+                  const statusOrder = ['submitted', 'in_progress', 'resolved', 'closed'];
+                  const currentIdx = statusOrder.indexOf(complaint.status);
+                  const isCompleted = index <= currentIdx;
+
+                  // Handle slight variations in status naming if backend differs
+                  // Assuming 'in-progress' vs 'in_progress'
+
+                  return (
+                    <div
+                      key={index}
+                      className={`progress-step ${isCompleted ? 'completed' : ''}`}
+                    >
+                      <div className="step-dot" />
+                      <div className="step-label">{step}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </Card>
+
+
+            {/* Estimated Resolution */}
+            <Card className="estimate-card modern-card gradient-card">
+              <h3>📅 Estimated Resolution</h3>
+              <div className="estimate-content">
+                <p className="estimate-time">3-5 business days</p>
+                <p className="estimate-note">Standard turnaround for campus issues</p>
+              </div>
+            </Card>
+
+            {/* Actions */}
+            <Card className="actions-card modern-card">
+              <h3>⚙️ Actions</h3>
+              <Button variant="secondary" style={{ width: '100%', marginBottom: '10px' }}>
+                📞 Contact Admin
+              </Button>
+
+              {user && (user.role === 'admin' || user.role === 'department_officer') && (
+                <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                  <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#555' }}>👮 Admin Actions</h4>
+                  {!showAssignUI ? (
+                    <Button variant="primary" style={{ width: '100%', background: '#2c3e50' }} onClick={() => setShowAssignUI(true)}>
+                      Assign Staff
+                    </Button>
+                  ) : (
+                    <div className="assign-box">
+                      <select
+                        style={{ width: '100%', padding: '8px', marginBottom: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                        value={selectedOfficer}
+                        onChange={(e) => setSelectedOfficer(e.target.value)}
+                      >
+                        <option value="">Select Staff</option>
+                        {officers.map(off => (
+                          <option key={off.id} value={off.id}>{off.name} ({off.department})</option>
+                        ))}
+                      </select>
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        <Button variant="primary" onClick={handleAssignOfficer} disabled={!selectedOfficer} style={{ flex: 1, fontSize: '12px' }}>
+                          Confirm
+                        </Button>
+                        <Button variant="secondary" onClick={() => setShowAssignUI(false)} style={{ flex: 1, fontSize: '12px' }}>
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </Card>
+          </div>
         </div>
       </div>
     </div>
