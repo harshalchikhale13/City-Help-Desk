@@ -32,9 +32,7 @@ const validateRegister = () => [
     .withMessage('Invalid email'),
   body('password')
     .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
-    .withMessage('Password must contain uppercase, lowercase, number, and special character'),
+    .withMessage('Password must be at least 8 characters'),
   body('firstName')
     .trim()
     .isLength({ min: 2 })
@@ -44,7 +42,7 @@ const validateRegister = () => [
     .isLength({ min: 2 })
     .withMessage('Last name is required'),
   body('phone')
-    .optional()
+    .optional({ checkFalsy: true })
     .matches(/^[0-9]{10}$/)
     .withMessage('Invalid phone number'),
 ];

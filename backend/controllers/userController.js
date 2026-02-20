@@ -128,6 +128,23 @@ const toggleUserStatus = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * Delete user (Admin only)
+ */
+const deleteUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  // Prevent self-deletion
+  if (parseInt(id) === req.user.id) {
+    throw new ApiError(400, 'You cannot delete your own account');
+  }
+  const result = await userService.deleteUser(id);
+  res.json({
+    success: true,
+    message: `User "${result.username}" deleted successfully`,
+    data: result,
+  });
+});
+
 module.exports = {
   register,
   login,
@@ -136,4 +153,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   toggleUserStatus,
+  deleteUser,
 };

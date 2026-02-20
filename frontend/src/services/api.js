@@ -49,6 +49,7 @@ export const userAPI = {
   updateProfile: (userData) => axiosInstance.put('/users/profile', userData),
   getAllUsers: (params) => axiosInstance.get('/users', { params }),
   getUserById: (id) => axiosInstance.get(`/users/${id}`),
+  toggleUserStatus: (id) => axiosInstance.put(`/users/${id}/toggle-status`),
 };
 
 // ========== COMPLAINT ENDPOINTS ==========

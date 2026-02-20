@@ -18,6 +18,7 @@ export default function RegisterPage() {
     firstName: '',
     lastName: '',
     phone: '',
+    role: 'student',
   });
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -42,10 +43,8 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!validatePassword(formData.password)) {
-      toast.error(
-        'Password must be at least 8 characters with uppercase, lowercase, number, and special character'
-      );
+    if (formData.password.length < 8) {
+      toast.error('Password must be at least 8 characters');
       setLoading(false);
       return;
     }
@@ -64,11 +63,13 @@ export default function RegisterPage() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         phone: formData.phone,
+        role: formData.role,
       });
 
       const { data, token } = response.data.data;
       login(data, token);
-      toast.success('Registration successful!');
+      toast.success('Registration successful! Welcome to Campus-Help Desk.');
+      // Both student and staff go to their dashboard
       navigate('/dashboard');
     } catch (error) {
       const message = error.response?.data?.message || 'Registration failed';
@@ -240,8 +241,40 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Role Selection */}
+            <div className="form-group-modern">
+              <label>I am joining as</label>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                {[
+                  { value: 'student', label: '🎓 Student', desc: 'Report campus issues' },
+                  { value: 'staff', label: '👔 Staff', desc: 'Report & track issues' },
+                ].map(opt => (
+                  <div
+                    key={opt.value}
+                    onClick={() => setFormData(p => ({ ...p, role: opt.value }))}
+                    style={{
+                      flex: 1,
+                      padding: '14px',
+                      border: formData.role === opt.value ? '2px solid #8b5cf6' : '2px solid #e5e7eb',
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      background: formData.role === opt.value ? '#f5f3ff' : '#f9fafb',
+                      transition: 'all 0.2s ease',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <div style={{ fontSize: '1.5rem', marginBottom: '4px' }}>{opt.label.split(' ')[0]}</div>
+                    <div style={{ fontWeight: 700, color: formData.role === opt.value ? '#8b5cf6' : '#374151', fontSize: '0.95rem' }}>
+                      {opt.label.split(' ').slice(1).join(' ')}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '2px' }}>{opt.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <button type="submit" className="btn-modern-primary" disabled={loading}>
-              {loading ? 'Creating Account...' : 'Sign Up'}
+              {loading ? 'Creating Account...' : `Sign Up as ${formData.role === 'student' ? 'Student' : 'Staff'}`}
             </button>
           </form>
 

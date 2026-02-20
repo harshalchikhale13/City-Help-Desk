@@ -1,18 +1,18 @@
 [
   {
     "id": 1,
-    "username": "citizen",
+    "username": "student1",
     "email": "citizen@example.com",
     "password": "$2a$10$yRIxhS77itP233RdVddCc.2VHDWyzBrJkWa9xISBZtMUzWteu7QIO",
     "first_name": "Raj",
     "last_name": "Kumar",
     "phone": "9876543210",
-    "role": "citizen",
+    "role": "student",
     "is_active": true,
     "profile_image": null,
     "created_at": "2026-01-18T10:00:00.000Z",
-    "updated_at": "2026-02-19T17:16:18.174Z",
-    "last_login": "2026-02-19T17:16:18.172Z"
+    "updated_at": "2026-02-20T07:08:23.335Z",
+    "last_login": "2026-02-20T07:08:23.334Z"
   },
   {
     "id": 2,
@@ -22,27 +22,12 @@
     "first_name": "Nakul",
     "last_name": "Singh",
     "phone": "123456789",
-    "role": "officer",
+    "role": "staff",
     "is_active": true,
     "profile_image": null,
     "created_at": "2026-01-18T10:00:00.000Z",
-    "updated_at": "2026-02-19T13:06:58.830Z",
-    "last_login": "2026-02-19T13:06:58.830Z"
-  },
-  {
-    "id": 2,
-    "username": "officer",
-    "email": "officer@example.com",
-    "password": "$2a$10$yRIxhS77itP233RdVddCc.2VHDWyzBrJkWa9xISBZtMUzWteu7QIO",
-    "first_name": "Nakul",
-    "last_name": "Ingole",
-    "phone": "1234567890",
-    "role": "officer",
-    "is_active": true,
-    "profile_image": null,
-    "created_at": "2026-01-18T10:00:00.000Z",
-    "updated_at": "2026-01-19T20:19:52.770Z",
-    "last_login": "2026-01-19T20:19:52.769Z"
+    "updated_at": "2026-02-19T19:43:52.954Z",
+    "last_login": "2026-02-19T19:43:52.954Z"
   },
   {
     "id": 3,
@@ -56,8 +41,8 @@
     "is_active": true,
     "profile_image": null,
     "created_at": "2026-01-18T10:00:00.000Z",
-    "updated_at": "2026-02-19T17:15:26.524Z",
-    "last_login": "2026-02-19T17:15:26.523Z"
+    "updated_at": "2026-02-20T06:54:50.168Z",
+    "last_login": "2026-02-20T06:54:50.167Z"
   },
   {
     "id": 4,
@@ -67,7 +52,7 @@
     "first_name": "Test",
     "last_name": "User",
     "phone": "9999999999",
-    "role": "citizen",
+    "role": "student",
     "is_active": true,
     "profile_image": null,
     "last_login": "2026-01-18T11:39:04.949Z",
@@ -81,7 +66,7 @@
     "first_name": "Harshal",
     "last_name": "chikhale",
     "phone": "9322908142",
-    "role": "citizen",
+    "role": "student",
     "is_active": true,
     "profile_image": null,
     "last_login": "2026-01-18T18:08:59.434Z",
@@ -96,7 +81,7 @@
     "first_name": "Harshal",
     "last_name": "chikhale",
     "phone": "9322908142",
-    "role": "citizen",
+    "role": "student",
     "is_active": true,
     "profile_image": null,
     "last_login": "2026-02-19T11:55:32.622Z",
@@ -111,10 +96,24 @@
     "first_name": "Nakul",
     "last_name": "Ingole",
     "phone": "1234567890",
-    "role": "citizen",
+    "role": "student",
     "is_active": true,
     "profile_image": null,
     "last_login": "2026-02-19T12:44:38.491Z",
     "created_at": "2026-02-19T12:44:38.491Z"
+  },
+  {
+    "id": 8,
+    "username": "Nikita",
+    "email": "harshalchikhale2@gmail.com",
+    "password": "$2a$10$xpqHzIwftBqWS98m1XiaCuopcD3SR.4K9oYCFk.OlZ4ClseSTlVL2",
+    "first_name": "Harshal",
+    "last_name": "chikhale",
+    "phone": "9322908142",
+    "role": "staff",
+    "is_active": true,
+    "profile_image": null,
+    "last_login": "2026-02-19T19:20:22.999Z",
+    "created_at": "2026-02-19T19:20:22.999Z"
   }
 ]

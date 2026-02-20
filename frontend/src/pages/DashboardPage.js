@@ -25,8 +25,8 @@ export default function DashboardPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If admin, redirect to admin dashboard
-    if (user?.role === 'admin' || user?.role === 'department_officer') {
+    // Admins should be on the admin dashboard
+    if (user?.role === 'admin') {
       navigate('/admin');
       return;
     }
@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     // Only fetch if not admin
-    if (user?.role !== 'admin' && user?.role !== 'department_officer') {
+    if (user?.role !== 'admin') {
       fetchComplaints();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,139 +84,165 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h1>
-          {user?.role === 'citizen' ? 'My Reported Issues' : 'All Campus Issues'}
-        </h1>
-        {user?.role === 'citizen' && (
-          <button
-            className="btn btn-primary"
-            onClick={() => navigate('/complaint/create')}
-          >
-            + Report New Issue
-          </button>
-        )}
-      </div>
+    <div style={{ width: '100%', padding: 0 }}>
 
-      {/* Filters */}
-      <div className="filters-section">
-        <select
-          name="status"
-          value={filters.status}
-          onChange={handleFilterChange}
-          className="filter-select"
-        >
-          <option value="">All Status</option>
-          <option value="submitted">Submitted</option>
-          <option value="assigned">Assigned</option>
-          <option value="in_progress">In Progress</option>
-          <option value="resolved">Resolved</option>
-          <option value="closed">Closed</option>
-        </select>
-
-        <select
-          name="category"
-          value={filters.category}
-          onChange={handleFilterChange}
-          className="filter-select"
-        >
-          <option value="">All Categories</option>
-          <option value="hostel_issues">Hostel Issues</option>
-          <option value="classroom_issues">Classroom Issues</option>
-          <option value="laboratory_issues">Laboratory Issues</option>
-          <option value="it_support">IT Support</option>
-          <option value="library_issues">Library Issues</option>
-          <option value="campus_infrastructure">Campus Infrastructure</option>
-          <option value="campus_safety">Campus Safety</option>
-        </select>
-
-        <select
-          name="priority"
-          value={filters.priority}
-          onChange={handleFilterChange}
-          className="filter-select"
-        >
-          <option value="">All Priority</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-      </div>
-
-      {/* Complaints List */}
-      <div className="complaints-list">
-        {loading ? (
-          <div className="loading">Loading issues...</div>
-        ) : complaints.length === 0 ? (
-          <div className="empty-state">
-            <p>No issues found</p>
+      {/* ===== Page Header ===== */}
+      <div className="page-header">
+        <div className="page-header-inner">
+          <div>
+            <h1>
+              {user?.role === 'staff' ? '🏢 Staff Issues Dashboard' : '🎓 My Reported Issues'}
+            </h1>
+            <p>
+              {user?.role === 'staff'
+                ? 'Track and manage issues you have reported as staff'
+                : 'Track the status of your campus issue reports'}
+            </p>
           </div>
-        ) : (
-          <div className="table-responsive">
-            <table className="complaints-table">
-              <thead>
-                <tr>
-                  <th>Issue ID</th>
-                  <th>Category</th>
-                  <th>Location</th>
-                  <th>Description</th>
-                  <th>Priority</th>
-                  <th>Status</th>
-                  <th>Reported On</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {complaints.map((complaint) => (
-                  <tr key={complaint.id}>
-                    <td className="complaint-id">{complaint.complaint_id}</td>
-                    <td>{formatCategory(complaint.category)}</td>
-                    <td>{formatLocation(complaint)}</td>
-                    <td className="description">
-                      {complaint.description.substring(0, 40)}...
-                    </td>
-                    <td>
-                      <span
-                        className="priority-badge"
-                        style={{ backgroundColor: getPriorityColor(complaint.priority) }}
-                      >
-                        {complaint.priority.charAt(0).toUpperCase() + complaint.priority.slice(1)}
-                      </span>
-                    </td>
-                    <td>
-                      <span
-                        className="status-badge"
-                        style={{ backgroundColor: getStatusColor(complaint.status) }}
-                      >
-                        {getStatusLabel(complaint.status)}
-                      </span>
-                    </td>
-                    <td>{formatDate(complaint.created_at)}</td>
-                    <td>
-                      <button
-                        className="btn-view"
-                        onClick={() => handleViewComplaint(complaint.id)}
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* Pagination Info */}
-      {complaints.length > 0 && (
-        <div className="pagination-info">
-          <p>
-            Showing {complaints.length} of {total} issues
-          </p>
+          {(user?.role === 'student' || user?.role === 'staff') && (
+            <div className="page-header-actions">
+              <button
+                style={{
+                  background: 'linear-gradient(135deg, #ef4444, #8b5cf6)',
+                  border: 'none',
+                  color: '#fff',
+                  padding: '10px 22px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontSize: '0.95rem',
+                  boxShadow: '0 4px 14px rgba(139,92,246,0.4)',
+                }}
+                onClick={() => navigate('/complaint/create')}
+              >
+                ✏️ Report New Issue
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
+
+      <div className="page-content" style={{ background: 'transparent' }}>
+
+        {/* Filters */}
+        <div className="filters-section">
+          <select
+            name="status"
+            value={filters.status}
+            onChange={handleFilterChange}
+            className="filter-select"
+          >
+            <option value="">All Status</option>
+            <option value="submitted">Submitted</option>
+            <option value="assigned">Assigned</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
+
+          <select
+            name="category"
+            value={filters.category}
+            onChange={handleFilterChange}
+            className="filter-select"
+          >
+            <option value="">All Categories</option>
+            <option value="hostel_issues">Hostel Issues</option>
+            <option value="classroom_issues">Classroom Issues</option>
+            <option value="laboratory_issues">Laboratory Issues</option>
+            <option value="it_support">IT Support</option>
+            <option value="library_issues">Library Issues</option>
+            <option value="campus_infrastructure">Campus Infrastructure</option>
+            <option value="campus_safety">Campus Safety</option>
+          </select>
+
+          <select
+            name="priority"
+            value={filters.priority}
+            onChange={handleFilterChange}
+            className="filter-select"
+          >
+            <option value="">All Priority</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+
+        {/* Complaints List */}
+        <div className="complaints-list">
+          {loading ? (
+            <div className="loading">Loading issues...</div>
+          ) : complaints.length === 0 ? (
+            <div className="empty-state">
+              <p>No issues found</p>
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="complaints-table">
+                <thead>
+                  <tr>
+                    <th>Issue ID</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Description</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Reported On</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {complaints.map((complaint) => (
+                    <tr key={complaint.id}>
+                      <td className="complaint-id">{complaint.complaint_id}</td>
+                      <td>{formatCategory(complaint.category)}</td>
+                      <td>{formatLocation(complaint)}</td>
+                      <td className="description">
+                        {complaint.description.substring(0, 40)}...
+                      </td>
+                      <td>
+                        <span
+                          className="priority-badge"
+                          style={{ backgroundColor: getPriorityColor(complaint.priority) }}
+                        >
+                          {complaint.priority.charAt(0).toUpperCase() + complaint.priority.slice(1)}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className="status-badge"
+                          style={{ backgroundColor: getStatusColor(complaint.status) }}
+                        >
+                          {getStatusLabel(complaint.status)}
+                        </span>
+                      </td>
+                      <td>{formatDate(complaint.created_at)}</td>
+                      <td>
+                        <button
+                          className="btn-view"
+                          onClick={() => handleViewComplaint(complaint.id)}
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Pagination Info */}
+        {complaints.length > 0 && (
+          <div className="pagination-info">
+            <p>
+              Showing {complaints.length} of {total} issues
+            </p>
+          </div>
+        )}
+      </div>{/* page-content */}
     </div>
   );
 }

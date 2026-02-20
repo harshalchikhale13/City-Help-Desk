@@ -12,14 +12,15 @@ const { generateToken } = require('../utils/jwtToken');
 const registerUser = async (userData) => {
   const { username, email, password, firstName, lastName, phone, role: requestedRole } = userData;
 
-  // Map friendly role names; prevent admin self-registration
-  let role = 'citizen'; // default
+  // Map roles: only student and staff are allowed via self-registration
+  // admin accounts cannot be self-registered
+  let role = 'student'; // default
   if (requestedRole === 'staff') {
     role = 'staff';
   } else if (requestedRole === 'student') {
-    role = 'citizen';
+    role = 'student';
   }
-  // 'admin' and 'department_officer' cannot be self-registered
+  // 'admin' cannot be self-registered
 
   try {
     // Check if user already exists
@@ -199,10 +200,46 @@ const getAllUsers = async (limit = 20, offset = 0, role = null) => {
   };
 };
 
+/**
+ * Toggle user active status (Admin only)
+ */
+const toggleUserStatus = async (userId) => {
+  const user = db.findById('users.json', parseInt(userId));
+  if (!user) throw new Error('User not found');
+
+  const updated = db.updateById('users.json', user.id, {
+    is_active: !user.is_active,
+  });
+
+  return {
+    id: updated.id,
+    username: updated.username,
+    email: updated.email,
+    firstName: updated.first_name,
+    lastName: updated.last_name,
+    role: updated.role,
+    isActive: updated.is_active,
+  };
+};
+
+/**
+ * Delete user (Admin only)
+ */
+const deleteUser = async (userId) => {
+  const user = db.findById('users.json', parseInt(userId));
+  if (!user) throw new Error('User not found');
+  if (user.role === 'admin') throw new Error('Cannot delete admin accounts');
+  const deleted = db.deleteById('users.json', user.id);
+  if (!deleted) throw new Error('Failed to delete user');
+  return { id: user.id, username: user.username, email: user.email };
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserById,
   updateUserProfile,
   getAllUsers,
+  toggleUserStatus,
+  deleteUser,
 };

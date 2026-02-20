@@ -1,6 +1,7 @@
 /**
  * App.js
  * Main React component with routing
+ * Roles: student | staff | admin
  */
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -16,6 +17,7 @@ import DashboardPage from './pages/DashboardPage';
 import ComplaintDetailPage from './pages/ComplaintDetailPage';
 import CreateComplaintPage from './pages/CreateComplaintPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import UserManagementPage from './pages/UserManagementPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -32,14 +34,15 @@ const ProtectedRoute = ({ element, allowedRoles = [] }) => {
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
-    return <Navigate to="/dashboard" />;
+    // Redirect admins to admin page, others to dashboard
+    return <Navigate to={user?.role === 'admin' ? '/admin' : '/dashboard'} />;
   }
 
   return element;
 };
 
 function AppContent() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
     return <div className="loading-spinner">Loading...</div>;
@@ -54,34 +57,44 @@ function AppContent() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Protected Routes */}
+        {/* Student & Staff Routes */}
         <Route
           path="/dashboard"
-          element={<ProtectedRoute element={<DashboardPage />} />}
+          element={<ProtectedRoute element={<DashboardPage />} allowedRoles={['student', 'staff']} />}
         />
         <Route
           path="/complaint/create"
-          element={<ProtectedRoute element={<CreateComplaintPage />} allowedRoles={['citizen']} />}
+          element={<ProtectedRoute element={<CreateComplaintPage />} allowedRoles={['student', 'staff']} />}
         />
         <Route
           path="/complaint/:id"
           element={<ProtectedRoute element={<ComplaintDetailPage />} />}
         />
+
+        {/* Admin Routes */}
         <Route
           path="/admin"
-          element={<ProtectedRoute element={<AdminDashboardPage />} allowedRoles={['admin', 'department_officer']} />}
+          element={<ProtectedRoute element={<AdminDashboardPage />} allowedRoles={['admin']} />}
         />
         <Route
-          path="/admin-dashboard"
-          element={<ProtectedRoute element={<AdminDashboardPage />} allowedRoles={['admin', 'department_officer']} />}
+          path="/admin/users"
+          element={<ProtectedRoute element={<UserManagementPage />} allowedRoles={['admin']} />}
         />
+
+        {/* Profile (all roles) */}
         <Route
           path="/profile"
           element={<ProtectedRoute element={<ProfilePage />} />}
         />
 
-        {/* Default Routes */}
-        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+        {/* Default redirect based on role */}
+        <Route path="/" element={
+          isAuthenticated
+            ? user?.role === 'admin'
+              ? <Navigate to="/admin" />
+              : <Navigate to="/dashboard" />
+            : <Navigate to="/login" />
+        } />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
 

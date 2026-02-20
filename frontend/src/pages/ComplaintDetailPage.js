@@ -127,14 +127,7 @@ export default function ComplaintDetailPage() {
     return emojiIcons[category] || '📌';
   };
 
-  /**
-   * Get status steps
-   */
-  const getStatusSteps = () => {
-    const statusOrder = ['submitted', 'in_progress', 'resolved', 'closed'];
-    const currentIndex = statusOrder.indexOf(complaint?.status);
-    return statusOrder.slice(0, Math.max(0, currentIndex + 1));
-  };
+
 
   if (loading) {
     return <LoadingSpinner size="lg" fullScreen />;

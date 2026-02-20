@@ -50,7 +50,7 @@ router.put(
  * Admin Routes
  */
 
-// Get all users
+// Get all users (Admin only)
 router.get(
   '/',
   authenticateToken,
@@ -58,12 +58,28 @@ router.get(
   userController.getAllUsers
 );
 
-// Get user by ID
+// Get user by ID (Admin only)
 router.get(
   '/:id',
   authenticateToken,
   authorize('admin'),
   userController.getUserById
+);
+
+// Toggle user active/inactive status (Admin only)
+router.put(
+  '/:id/toggle-status',
+  authenticateToken,
+  authorize('admin'),
+  userController.toggleUserStatus
+);
+
+// Delete user (Admin only)
+router.delete(
+  '/:id',
+  authenticateToken,
+  authorize('admin'),
+  userController.deleteUser
 );
 
 module.exports = router;

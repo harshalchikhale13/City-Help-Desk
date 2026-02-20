@@ -1,5 +1,6 @@
 /**
  * Navbar Component
+ * Role-based navigation: student | staff | admin
  */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,18 +17,28 @@ export default function Navbar() {
     navigate('/login');
   };
 
+  const isAdmin = user?.role === 'admin';
+  const isStudent = user?.role === 'student';
+  const isStaff = user?.role === 'staff';
+
+  const roleBadgeColor = isAdmin ? '#ef4444' : isStaff ? '#f59e0b' : '#8b5cf6';
+  const roleLabel = isAdmin ? 'Admin' : isStaff ? 'Staff' : 'Student';
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <Link to="/dashboard" className="navbar-logo">
-          <span>🎓</span> Campus-Help Desk
+        <Link to={isAdmin ? '/admin' : '/dashboard'} className="navbar-logo">
+          <span>🎓</span>
+          <span className="navbar-logo-text">Campus-Help Desk</span>
         </Link>
 
         <div className={`nav-menu ${menuOpen ? 'active' : ''}`}>
-          {user?.role === 'citizen' && (
+
+          {/* Student & Staff Navigation */}
+          {(isStudent || isStaff) && (
             <>
               <Link to="/dashboard" className="nav-link">
-                My Issues
+                📋 My Issues
               </Link>
               <Link to="/complaint/create" className="nav-link nav-link-primary">
                 ✏️ Report Issue
@@ -35,18 +46,32 @@ export default function Navbar() {
             </>
           )}
 
-          {(user?.role === 'admin' || user?.role === 'department_officer') && (
+          {/* Admin Navigation */}
+          {isAdmin && (
             <>
               <Link to="/admin" className="nav-link nav-link-primary">
-                🎛️ Admin Dashboard
+                🎛️ Dashboard
               </Link>
-              <Link to="/dashboard" className="nav-link">
-                All Issues
+              <Link to="/admin/users" className="nav-link">
+                👥 User Management
               </Link>
             </>
           )}
 
           <div className="nav-user">
+            {/* Role Badge */}
+            <span style={{
+              background: roleBadgeColor,
+              color: '#fff',
+              padding: '2px 10px',
+              borderRadius: '20px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              letterSpacing: '0.5px',
+            }}>
+              {roleLabel}
+            </span>
+
             <Link to="/profile" className="nav-link">
               {user?.firstName || user?.username}
             </Link>

@@ -41,15 +41,15 @@ const limiter = rateLimit({
 });
 
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
+  windowMs: 60 * 60 * 1000, // 60 minutes
+  max: 20, // allow 20 login attempts per hour
   message: 'Too many login attempts, please try again later.',
   skipSuccessfulRequests: true,
 });
 
 app.use('/api/', limiter);
 app.use('/api/users/login', authLimiter);
-app.use('/api/users/register', authLimiter);
+// Note: register is NOT rate-limited by authLimiter (admins may register multiple staff)
 
 // ========== BODY PARSER MIDDLEWARE ==========
 

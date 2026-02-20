@@ -1,5 +1,6 @@
 /**
  * Complaint Routes
+ * Roles: student | staff | admin
  */
 const express = require('express');
 const router = express.Router();
@@ -8,15 +9,11 @@ const { authenticateToken } = require('../middleware/auth');
 const { authorize, isAdminOrOfficer } = require('../middleware/authorization');
 const { validateComplaint, handleValidationErrors } = require('../utils/validators');
 
-/**
- * Public Routes (requiring authentication)
- */
-
-// Create complaint (Citizens, Staff, and Admins)
+// Create complaint — students, staff, and admins can all create issues
 router.post(
   '/',
   authenticateToken,
-  authorize('citizen', 'staff', 'admin', 'department_officer'),
+  authorize('student', 'staff', 'admin'),
   validateComplaint(),
   handleValidationErrors,
   complaintController.createComplaint
@@ -36,18 +33,14 @@ router.get(
   complaintController.getComplaintHistory
 );
 
-/**
- * Admin & Department Officer Routes
- */
-
-// Get all complaints with filters
+// Get all complaints with filters (any authenticated user)
 router.get(
   '/',
   authenticateToken,
   complaintController.getAllComplaints
 );
 
-// Update complaint status
+// Update complaint status (admin and staff only)
 router.put(
   '/:id/status',
   authenticateToken,
@@ -55,7 +48,7 @@ router.put(
   complaintController.updateComplaintStatus
 );
 
-// Delete complaint (Admin only)
+// Delete complaint (admin only)
 router.delete(
   '/:id',
   authenticateToken,
@@ -63,7 +56,7 @@ router.delete(
   complaintController.deleteComplaint
 );
 
-// Add complaint update/comment
+// Add complaint update/comment (admin and staff)
 router.post(
   '/:id/updates',
   authenticateToken,
@@ -71,11 +64,7 @@ router.post(
   complaintController.addComplaintUpdate
 );
 
-/**
- * Dashboard Routes
- */
-
-// Get complaint statistics
+// Get complaint statistics (admin and staff)
 router.get(
   '/stats/overview',
   authenticateToken,

@@ -1,25 +1,18 @@
 /* Admin Dashboard Styles */
 
 .admin-dashboard-page {
-  padding: 2rem 3rem;
+  /* Outer wrapper - no padding, page-content handles it */
   max-width: 100%;
   margin: 0;
   background: transparent;
+  width: 100%;
   min-height: 100vh;
 }
 
+/* Legacy admin-header (now replaced by .page-header) - kept for fallback */
 .admin-header {
-  margin-bottom: 2.5rem;
-  padding: 2.5rem;
-  background: white;
-  border-radius: 1rem;
-  box-shadow: var(--shadow-purple);
-  border: 1px solid var(--border-color);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+  display: none;
+  /* hidden, replaced by .page-header */
 }
 
 .admin-header h1 {
@@ -52,18 +45,22 @@
   box-shadow: var(--shadow-sm);
 }
 
+
 .tab-button {
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 2rem;
   background: transparent;
   color: var(--text-secondary);
   border: none;
   border-bottom: 3px solid transparent;
   cursor: pointer;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.1rem;
   transition: all 0.2s ease;
   white-space: nowrap;
   border-radius: 0.5rem 0.5rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .tab-button:hover {
@@ -73,9 +70,9 @@
 
 .tab-button.active {
   color: #8b5cf6;
-  /* Purple active */
   border-bottom-color: #8b5cf6;
-  background: #f5f3ff;
+  background: linear-gradient(to top, #f5f3ff, transparent);
+  font-size: 1.15rem;
 }
 
 .tab-content {
